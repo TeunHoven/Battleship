@@ -1,4 +1,4 @@
 package model.ship;
 
-public class DestroyerShip {
+public class DestroyerShip extends Ship {
 }
