@@ -11,11 +11,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import model.player.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Board extends Parent {
+    private Player player;
+
     private int width, height;
 
     private ArrayList<Tile> tiles;
@@ -25,7 +28,9 @@ public class Board extends Parent {
 
     private boolean setHorizontal;
 
-    public Board () {
+    public Board (Player player) {
+        this.player = player;
+
         this.width = 15;
         this.height = 10;
 

@@ -8,6 +8,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import model.board.Board;
+import model.player.HumanPlayer;
+import model.player.Player;
 
 public class GameView {
     public enum GameState {
@@ -21,18 +23,22 @@ public class GameView {
     private Board userBoard, enemyBoard;
     private Label userLabel, enemyLabel, header;
     private Font myFont;
+    private Player user, opponent;
 
     private static GameState gameState;
 
     public GameView() {
-        this.userBoard = new Board();
-        this.enemyBoard = new Board();
+        this.user = new HumanPlayer("Teun");
+        this.opponent = new HumanPlayer("Tim");
+
+        this.userBoard = new Board(user);
+        this.enemyBoard = new Board(opponent);
 
         this.myFont = new Font(40);
 
-        this.userLabel = new Label("User's Fleet");
+        this.userLabel = new Label(user.getName() + "'s Fleet");
         userLabel.setFont(myFont);
-        this.enemyLabel = new Label("Enemy's Fleet");
+        this.enemyLabel = new Label(opponent.getName() + "'s Fleet");
         enemyLabel.setFont(myFont);
 
         this.header = new Label("Battleship");
