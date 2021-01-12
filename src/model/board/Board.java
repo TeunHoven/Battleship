@@ -27,7 +27,7 @@ public class Board extends Parent {
 
     private String letterCoords = "ABCDEFGHIJKLMNO";
 
-    private boolean setHorizontal;
+    private boolean isHorizontal;
 
     public Board (Player player) {
         this.player = player;
@@ -39,7 +39,7 @@ public class Board extends Parent {
 
         this.rows = new VBox();
 
-        this.setHorizontal = true;
+        this.isHorizontal = true;
 
         setUpBoard();
     }
@@ -102,7 +102,7 @@ public class Board extends Parent {
         Tile[] neighbours = new Tile[size];
 
         for(int i=0; i < size; i++) {
-            if(setHorizontal) {
+            if(isHorizontal()) {
                 neighbours[i] = getTile(tile.getXPos() + i, tile.getYPos());
             } else {
                 neighbours[i] = getTile(tile.getXPos(), tile.getYPos() + i);
@@ -114,5 +114,13 @@ public class Board extends Parent {
 
     public ArrayList<Tile> getTiles() {
         return tiles;
+    }
+
+    public boolean isHorizontal() {
+        return isHorizontal;
+    }
+
+    public void setHorizontal(boolean isHorizontal) {
+        this.isHorizontal = isHorizontal;
     }
 }

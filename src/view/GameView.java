@@ -1,6 +1,7 @@
 package view;
 
 import controller.Controller;
+import controller.GameState;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -13,13 +14,6 @@ import model.player.HumanPlayer;
 import model.player.Player;
 
 public class GameView {
-    public enum GameState {
-        SETUP,
-        USERROUND,
-        ENEMYROUND,
-        END
-    }
-
     private Scene scene;
     private Board userBoard, enemyBoard;
     private static Label userLabel, enemyLabel, header, currShip;
@@ -86,10 +80,6 @@ public class GameView {
 
     public Scene getScene() {
         return scene;
-    }
-
-    public static GameState getGameState() {
-        return gameState;
     }
 
     public static void setSelectedShip(String name) {
