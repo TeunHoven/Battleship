@@ -10,14 +10,16 @@ public class Tile extends Rectangle {
     private Ship ship;
     private boolean hasShip;
     private Color tileColor;
+    private Board board;
 
-    public Tile(int x, int y) {
+    public Tile(int x, int y, Board board) {
         super(SIZE, SIZE);
         this.x = x;
         this.y = y;
         this.ship = null;
         this.hasShip = false;
         this.tileColor = Color.BLUE;
+        this.board = board;
 
         setUp();
     }
@@ -45,5 +47,10 @@ public class Tile extends Rectangle {
 
     public void setColor(Color color) {
         this.tileColor = color;
+        setFill(tileColor);
+    }
+
+    public Board getBoard() {
+        return board;
     }
 }

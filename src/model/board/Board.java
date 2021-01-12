@@ -1,10 +1,15 @@
 package model.board;
 
+import controller.Controller;
+import javafx.beans.value.ChangeListener;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.util.ArrayList;
@@ -12,7 +17,7 @@ import java.util.ArrayList;
 public class Board extends Parent {
     private int width, height;
 
-    private ArrayList<Tile> tile;
+    private ArrayList<Tile> tiles;
     private VBox rows;
 
     private String letterCoords = "ABCDEFGHIJKLMNO";
@@ -20,6 +25,8 @@ public class Board extends Parent {
     public Board () {
         this.width = 15;
         this.height = 10;
+
+        this.tiles = new ArrayList<>();
 
         this.rows = new VBox();
 
@@ -52,7 +59,11 @@ public class Board extends Parent {
                 }
 
                 // Creates all the tiles in the board
-                Tile tile = new Tile(x, y);
+                Tile tile = new Tile(x, y, this);
+
+                tile.addEventFilter(MouseEvent.MOUSE_CLICKED, Controller.mouseEvent);
+                tile.hoverProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> onHover(tile));
+                tiles.add(tile);
                 row.getChildren().add(tile);
             }
             if(y == 0) {
@@ -62,5 +73,30 @@ public class Board extends Parent {
         }
 
         getChildren().add(rows);
+    }
+
+    public Tile getTile(int x, int y) {
+        int index = ((y-1)*15)+(x-1);
+
+        return tiles.get(index);
+    }
+
+    public Tile[] getTileNeighboursHorizontal(Tile tile, int size) {
+        Tile[] neighbours = new Tile[size+1];
+
+        int index = tiles.indexOf(tile);
+        for(int i=0; i <= size; i++) {
+            neighbours[i] = tiles.get(index+i);
+        }
+
+        return neighbours;
+    }
+
+    private void onHover(Tile tile) {
+        Tile[] tiles = tile.getBoard().getTileNeighboursHorizontal(tile, 5);
+
+        for(Tile t: tiles) {
+            t.setColor(Color.GRAY);
+        }
     }
 }

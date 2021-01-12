@@ -10,10 +10,18 @@ import javafx.scene.text.Font;
 import model.board.Board;
 
 public class GameView {
+    public enum GameState {
+        SETUP,
+        RUNNING,
+        END
+    }
+
     private Scene scene;
     private Board userBoard, enemyBoard;
     private Label userLabel, enemyLabel, header;
     private Font myFont;
+
+    private static GameState gameState;
 
     public GameView() {
         this.userBoard = new Board();
@@ -30,6 +38,8 @@ public class GameView {
         header.setFont(new Font(50));
 
         setView();
+
+        this.gameState = GameState.SETUP;
     }
 
     private void setView() {
@@ -57,5 +67,9 @@ public class GameView {
 
     public Scene getScene() {
         return scene;
+    }
+
+    public static GameState getGameState() {
+        return gameState;
     }
 }
