@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -73,7 +74,7 @@ public class Board extends Parent {
 
                 // Creates the mouse events
                 tile.addEventFilter(MouseEvent.MOUSE_CLICKED, Controller.mouseEvent);
-                tile.hoverProperty().addListener((observable, oldValue, newValue) -> onHover(tile));
+                tile.hoverProperty().addListener((observable, oldValue, newValue) -> Controller.onHover(tile));
                 tiles.add(tile);
                 row.getChildren().add(tile);
             }
@@ -86,6 +87,7 @@ public class Board extends Parent {
         getChildren().add(rows);
     }
 
+    // Gets tile from x, y coordinates on the board
     public Tile getTile(int x, int y) {
         int index = ((y)*15)+(x);
 
@@ -95,10 +97,11 @@ public class Board extends Parent {
         return tiles.get(index);
     }
 
+    // Gets neigbour tiles from a specific size
     public Tile[] getTileNeighboursHorizontal(Tile tile, int size) {
-        Tile[] neighbours = new Tile[size+1];
+        Tile[] neighbours = new Tile[size];
 
-        for(int i=0; i <= size; i++) {
+        for(int i=0; i < size; i++) {
             if(setHorizontal) {
                 neighbours[i] = getTile(tile.getXPos() + i, tile.getYPos());
             } else {
@@ -109,16 +112,7 @@ public class Board extends Parent {
         return neighbours;
     }
 
-    private void onHover(Tile tile) {
-        Tile[] neighbourTiles = tile.getBoard().getTileNeighboursHorizontal(tile, 5);
-        boolean validPlacement = !Arrays.asList(neighbourTiles).contains(null);
-
-        for (Tile t : tiles) {
-            if(validPlacement && Arrays.asList(neighbourTiles).contains(t)) {
-                t.setColor(Color.GRAY);
-            } else {
-                t.setColor(Color.BLUE);
-            }
-        }
+    public ArrayList<Tile> getTiles() {
+        return tiles;
     }
 }

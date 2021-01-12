@@ -1,5 +1,6 @@
 package view;
 
+import controller.Controller;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -21,9 +22,10 @@ public class GameView {
 
     private Scene scene;
     private Board userBoard, enemyBoard;
-    private Label userLabel, enemyLabel, header;
+    private static Label userLabel, enemyLabel, header, currShip;
     private Font myFont;
     private Player user, opponent;
+    private Controller controller;
 
     private static GameState gameState;
 
@@ -43,10 +45,14 @@ public class GameView {
 
         this.header = new Label("Battleship");
         header.setFont(new Font(50));
+        this.currShip = new Label("Ship: none");
+        currShip.setFont(new Font(20));
 
         setView();
 
-        this.gameState = GameState.SETUP;
+        gameState = GameState.SETUP;
+
+        controller = new Controller(userBoard, enemyBoard);
     }
 
     private void setView() {
@@ -63,13 +69,19 @@ public class GameView {
         HBox boards = new HBox(100, userSide, enemySide);
         boards.setAlignment(Pos.CENTER);
 
+        HBox ship = new HBox(0, currShip);
+        ship.setAlignment(Pos.TOP_LEFT);
         HBox headerBox = new HBox(0, header);
         headerBox.setAlignment(Pos.CENTER);
 
-        root.setTop(headerBox);
+        VBox topBox = new VBox(10, headerBox, ship);
+        topBox.setAlignment(Pos.CENTER);
+
+        root.setTop(topBox);
         root.setCenter(boards);
 
         scene = new Scene(root);
+        scene.setOnKeyPressed(Controller.keyEvent);
     }
 
     public Scene getScene() {
@@ -78,5 +90,9 @@ public class GameView {
 
     public static GameState getGameState() {
         return gameState;
+    }
+
+    public static void setSelectedShip(String name) {
+        currShip.setText("Ship: " + name);
     }
 }
