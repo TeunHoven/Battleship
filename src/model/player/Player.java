@@ -7,6 +7,12 @@ public class Player {
     Ship[] ships;
     int points;
 
+    public Player(String name) {
+        setName(name);
+
+        resetPoints();
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -34,5 +40,4 @@ public class Player {
     public int getPoints() {
         return points;
     }
-
 }

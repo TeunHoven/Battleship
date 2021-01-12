@@ -53,4 +53,12 @@ public class Tile extends Rectangle {
     public Board getBoard() {
         return board;
     }
+
+    public int getXPos() {
+        return x;
+    }
+
+    public int getYPos() {
+        return y;
+    }
 }

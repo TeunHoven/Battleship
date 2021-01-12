@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Board extends Parent {
     private int width, height;
@@ -22,6 +23,8 @@ public class Board extends Parent {
 
     private String letterCoords = "ABCDEFGHIJKLMNO";
 
+    private boolean setHorizontal;
+
     public Board () {
         this.width = 15;
         this.height = 10;
@@ -29,6 +32,8 @@ public class Board extends Parent {
         this.tiles = new ArrayList<>();
 
         this.rows = new VBox();
+
+        this.setHorizontal = true;
 
         setUpBoard();
     }
@@ -61,8 +66,9 @@ public class Board extends Parent {
                 // Creates all the tiles in the board
                 Tile tile = new Tile(x, y, this);
 
+                // Creates the mouse events
                 tile.addEventFilter(MouseEvent.MOUSE_CLICKED, Controller.mouseEvent);
-                tile.hoverProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> onHover(tile));
+                tile.hoverProperty().addListener((observable, oldValue, newValue) -> onHover(tile));
                 tiles.add(tile);
                 row.getChildren().add(tile);
             }
@@ -76,7 +82,10 @@ public class Board extends Parent {
     }
 
     public Tile getTile(int x, int y) {
-        int index = ((y-1)*15)+(x-1);
+        int index = ((y)*15)+(x);
+
+        if(index < 0 || index > 149)
+            return null;
 
         return tiles.get(index);
     }
@@ -84,19 +93,27 @@ public class Board extends Parent {
     public Tile[] getTileNeighboursHorizontal(Tile tile, int size) {
         Tile[] neighbours = new Tile[size+1];
 
-        int index = tiles.indexOf(tile);
         for(int i=0; i <= size; i++) {
-            neighbours[i] = tiles.get(index+i);
+            if(setHorizontal) {
+                neighbours[i] = getTile(tile.getXPos() + i, tile.getYPos());
+            } else {
+                neighbours[i] = getTile(tile.getXPos(), tile.getYPos() + i);
+            }
         }
 
         return neighbours;
     }
 
     private void onHover(Tile tile) {
-        Tile[] tiles = tile.getBoard().getTileNeighboursHorizontal(tile, 5);
+        Tile[] neighbourTiles = tile.getBoard().getTileNeighboursHorizontal(tile, 5);
+        boolean validPlacement = !Arrays.asList(neighbourTiles).contains(null);
 
-        for(Tile t: tiles) {
-            t.setColor(Color.GRAY);
+        for (Tile t : tiles) {
+            if(validPlacement && Arrays.asList(neighbourTiles).contains(t)) {
+                t.setColor(Color.GRAY);
+            } else {
+                t.setColor(Color.BLUE);
+            }
         }
     }
 }

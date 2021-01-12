@@ -12,7 +12,8 @@ import model.board.Board;
 public class GameView {
     public enum GameState {
         SETUP,
-        RUNNING,
+        USERROUND,
+        ENEMYROUND,
         END
     }
 
