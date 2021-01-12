@@ -2,8 +2,7 @@ package model.ship;
 
 public class CarrierShip extends Ship {
 
-    public CarrierShip() {
-        shipLength = 5;
-        shipLives = 5;
+    public CarrierShip(int posX, int posY) {
+        super(5,5, posX ,posY);
     }
 }

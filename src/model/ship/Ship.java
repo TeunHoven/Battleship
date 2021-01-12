@@ -6,6 +6,13 @@ public class Ship {
     int posX;
     int posY;
 
+    public Ship(int shipLength, int shipLives, int posX, int posY) {
+        this.shipLength = shipLength;
+        this.shipLives = shipLives;
+        this.posX = posX;
+        this.posY = posY;
+    }
+
     public int getShipLength(){
         return shipLength;
     }
@@ -20,14 +27,6 @@ public class Ship {
 
     public int getPosY() {
         return posY;
-    }
-
-    public void setPosX(int posX) {
-        this.posX = posX;
-    }
-
-    public void setPosY(int posY) {
-        this.posY = posY;
     }
 
     public void hitShip() {
