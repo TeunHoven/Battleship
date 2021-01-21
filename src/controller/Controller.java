@@ -149,17 +149,6 @@ public class Controller {
                         }
                     }
                 }
-
-                if (selectedShip instanceof PatrolBoatShip) {
-                    if (GameManager.canAddPatrolBoat()) {
-                        for (Tile t : selectedTiles) {
-                            if(!t.hasShip()) {
-                                t.setHasShip(true);
-                                t.setColor(Color.GRAY);
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -235,7 +224,7 @@ public class Controller {
 
     // All mouse events necessary for the ENEMYROUND game state
     private void enemyRoundMouse(MouseEvent event) {
-
+        
     }
 
     // All mouse events necessary for the END game state
@@ -300,7 +289,9 @@ public class Controller {
             }
         }
 
-        selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
+        if(selectedTile != null) {
+            selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
+        }
         updateView();
     }
 
