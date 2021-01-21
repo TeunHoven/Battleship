@@ -17,7 +17,7 @@ import model.player.Player;
 public class GameView {
     private static Scene scene;
     private static BorderPane root;
-    private static Label userLabel, enemyLabel, header, currShip;
+    private static Label userLabel, enemyLabel, header, currShip, userPoints, enemyPoints;
     private Font myFont;
     private Controller controller;
 
@@ -77,5 +77,9 @@ public class GameView {
 
     public static void setSelectedShip(String name) {
         currShip.setText("Ship: " + name);
+    }
+
+    public static void setPoints(int points) {
+
     }
 }

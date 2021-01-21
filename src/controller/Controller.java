@@ -110,6 +110,8 @@ public class Controller {
                     if (GameManager.canAddSuperPatrol()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
+                                SuperPatrolShip sps = new SuperPatrolShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
+                                t.setShip(sps);
                                 t.setHasShip(true);
                                 t.setColor(Color.GRAY);
                             }
@@ -249,45 +251,45 @@ public class Controller {
         // When key 1 is pressed, set ship to Patrol Boat
         if(event.getCode() == KeyCode.DIGIT1) {
             if(selectedTile == null) {
-                selectedShip = new PatrolBoatShip(0, 0);
+                selectedShip = new PatrolBoatShip(0, 0, usersBoard.isHorizontal());
             } else {
-                selectedShip = new PatrolBoatShip(selectedTile.getXPos(), selectedTile.getYPos());
+                selectedShip = new PatrolBoatShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
             }
         }
 
         // When key 2 is pressed, set ship to Super Patrol
         if(event.getCode() == KeyCode.DIGIT2) {
             if(selectedTile == null) {
-                selectedShip = new SuperPatrolShip(0, 0);
+                selectedShip = new SuperPatrolShip(0, 0, usersBoard.isHorizontal());
             } else {
-                selectedShip = new SuperPatrolShip(selectedTile.getXPos(), selectedTile.getYPos());
+                selectedShip = new SuperPatrolShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
             }
         }
 
         // When key 3 is pressed, set ship to Destroyer
         if(event.getCode() == KeyCode.DIGIT3) {
             if(selectedTile == null) {
-                selectedShip = new DestroyerShip(0, 0);
+                selectedShip = new DestroyerShip(0, 0, usersBoard.isHorizontal());
             } else {
-                selectedShip = new DestroyerShip(selectedTile.getXPos(), selectedTile.getYPos());
+                selectedShip = new DestroyerShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
             }
         }
 
         // When key 4 is pressed, set ship to Battleship
         if(event.getCode() == KeyCode.DIGIT4) {
             if(selectedTile == null) {
-                selectedShip = new BattleShip(0, 0);
+                selectedShip = new BattleShip(0, 0, usersBoard.isHorizontal());
             } else {
-                selectedShip = new BattleShip(selectedTile.getXPos(), selectedTile.getYPos());
+                selectedShip = new BattleShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
             }
         }
 
         // When key 5 is pressed, set ship to Carrier
         if(event.getCode() == KeyCode.DIGIT5) {
             if(selectedTile == null) {
-                selectedShip = new CarrierShip(0, 0);
+                selectedShip = new CarrierShip(0, 0, usersBoard.isHorizontal());
             } else {
-                selectedShip = new CarrierShip(selectedTile.getXPos(), selectedTile.getYPos());
+                selectedShip = new CarrierShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
             }
         }
 
