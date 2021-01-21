@@ -322,7 +322,7 @@ public class Controller {
     private void setUpHover() {
         if(selectedShip != null) {
             selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
-            boolean validPlacement = !Arrays.asList(selectedTiles).contains(null);
+            boolean validPlacement = isValidPlacement();
 
             for (Tile t : usersBoard.getTiles()) {
                 if (validPlacement && Arrays.asList(selectedTiles).contains(t)) {
@@ -355,6 +355,21 @@ public class Controller {
     // All hover events necessary for the END game state
     private void endRoundHover() {
 
+    }
+
+    private boolean isValidPlacement() {
+        if(Arrays.asList(selectedTiles).contains(null)) {
+            return false;
+        }
+        if(usersBoard.isHorizontal()) {
+            System.out.println("Normal: " + selectedTile.getYPos());
+            for(Tile t: selectedTiles) {
+                if(t.getYPos() != selectedTile.getYPos()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private int getShipsLeftOver() {
@@ -398,5 +413,8 @@ public class Controller {
                 }
             }
         }
+
+        GameView.setUserPoints(GameManager.getUser().getPoints());
+        GameView.setEnemyPoints(GameManager.getOpponent().getPoints());
     }
 }
