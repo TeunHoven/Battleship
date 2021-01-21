@@ -17,17 +17,23 @@ import view.GameView;
 import java.util.Arrays;
 
 public class Controller {
+    public static Controller sharedInstance = new Controller();
+
     private static Board usersBoard, opponentsBoard;
     private static Ship selectedShip;
     private static Tile selectedTile;
 
-    public Controller(Board userBoard, Board opponentBoard) {
-        usersBoard = userBoard;
-        opponentsBoard = opponentBoard;
+    private Controller() {
+
+    }
+
+    public static void setUp() {
+        usersBoard = GameManager.getUserBoard();
+        opponentsBoard = GameManager.getOpponentBoard();
         selectedShip = null;
     }
 
-    public static EventHandler<KeyEvent> keyEvent = new EventHandler<>() {
+    public EventHandler<KeyEvent> keyEvent = new EventHandler<>() {
 
         @Override
         public void handle(KeyEvent keyEvent) {
@@ -54,7 +60,7 @@ public class Controller {
         }
     };
 
-    public static EventHandler<MouseEvent> mouseEvent = new EventHandler<>() {
+    public EventHandler<MouseEvent> mouseEvent = new EventHandler<>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
             switch(GameManager.getGameState()) {
@@ -80,7 +86,7 @@ public class Controller {
         }
     };
 
-    private static void placeShip(Tile tile, Ship ship) {
+    private void placeShip(Tile tile, Ship ship) {
         Tile[] neighbourTiles = usersBoard.getTileNeighboursHorizontal(tile, selectedShip.getShipLength());
         boolean validPlacement = !Arrays.asList(neighbourTiles).contains(null);
 
@@ -141,12 +147,12 @@ public class Controller {
         }
     }
 
-    private static void tileClickedRightButton(Tile tile) {
+    private void tileClickedRightButton(Tile tile) {
         tile.setColor(Color.BLUE);
     }
 
     // Gets called when mouse hovers a tile
-    public static void onHover(Tile tile) {
+    public void onHover(Tile tile) {
         selectedTile = tile;
 
         switch(GameManager.getGameState()) {
@@ -176,7 +182,7 @@ public class Controller {
     //////////////////////////////////////////////////////
 
     // All mouse events necessary for the SETUP game state
-    private static void setUpMouse(MouseEvent event) {
+    private void setUpMouse(MouseEvent event) {
         // Left click on the mouse
         if (event.getButton() == MouseButton.PRIMARY) {
             placeShip(selectedTile, selectedShip);
@@ -192,17 +198,17 @@ public class Controller {
     }
 
     // All mouse events necessary for the USERROUND game state
-    private static void userRoundMouse(MouseEvent event) {
+    private void userRoundMouse(MouseEvent event) {
 
     }
 
     // All mouse events necessary for the ENEMYROUND game state
-    private static void enemyRoundMouse(MouseEvent event) {
+    private void enemyRoundMouse(MouseEvent event) {
 
     }
 
     // All mouse events necessary for the END game state
-    private static void endRoundMouse(MouseEvent event) {
+    private void endRoundMouse(MouseEvent event) {
 
     }
 
@@ -211,7 +217,7 @@ public class Controller {
     //////////////////////////////////////////////////////
 
     // All keys events necessary for the SETUP game state
-    private static void setUpKeys(KeyEvent event) {
+    private void setUpKeys(KeyEvent event) {
         if(event.getCode() == KeyCode.E) {
             usersBoard.setHorizontal(!usersBoard.isHorizontal());
         }
@@ -278,17 +284,17 @@ public class Controller {
     }
 
     // All keys events necessary for the USERROUND game state
-    private static void userRoundKeys(KeyEvent event) {
+    private void userRoundKeys(KeyEvent event) {
 
     }
 
     // All keys events necessary for the ENEMYROUND game state
-    private static void enemyRoundKeys(KeyEvent event) {
+    private void enemyRoundKeys(KeyEvent event) {
 
     }
 
     // All keys events necessary for the END game state
-    private static void endRoundKeys(KeyEvent event) {
+    private void endRoundKeys(KeyEvent event) {
 
     }
 
@@ -297,7 +303,7 @@ public class Controller {
     //////////////////////////////////////////////////////
 
     // All hover events necessary for the SETUP game state
-    private static void setUpHover() {
+    private void setUpHover() {
         if(selectedShip != null) {
             Tile[] neighbourTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
             boolean validPlacement = !Arrays.asList(neighbourTiles).contains(null);
@@ -313,7 +319,7 @@ public class Controller {
     }
 
     // All hover events necessary for the USERROUND game state
-    private static void userRoundHover() {
+    private void userRoundHover() {
         for (Tile t: opponentsBoard.getTiles()) {
             if(t == selectedTile) {
                 t.setColor(Color.RED);
@@ -324,12 +330,12 @@ public class Controller {
     }
 
     // All hover events necessary for the ENEMYROUND game state
-    private static void enemyRoundHover() {
+    private void enemyRoundHover() {
 
     }
 
     // All hover events necessary for the END game state
-    private static void endRoundHover() {
+    private void endRoundHover() {
 
     }
 }

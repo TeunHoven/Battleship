@@ -73,8 +73,8 @@ public class Board extends Parent {
                 Tile tile = new Tile(x, y, this);
 
                 // Creates the mouse events
-                tile.addEventFilter(MouseEvent.MOUSE_CLICKED, Controller.mouseEvent);
-                tile.hoverProperty().addListener((observable, oldValue, newValue) -> Controller.onHover(tile));
+                tile.addEventFilter(MouseEvent.MOUSE_CLICKED, Controller.sharedInstance.mouseEvent);
+                tile.hoverProperty().addListener((observable, oldValue, newValue) -> Controller.sharedInstance.onHover(tile));
                 tiles.add(tile);
                 row.getChildren().add(tile);
             }

@@ -1,6 +1,9 @@
 package model;
 
 import controller.GameState;
+import model.board.Board;
+import model.player.HumanPlayer;
+import model.player.Player;
 
 public class GameManager {
     private static GameState gameState = GameState.SETUP;
@@ -10,6 +13,17 @@ public class GameManager {
     private static int[] destroyerShips = {5, 0};
     private static int[] battleshipShips = {3, 0};
     private static int[] carrierShips = {2, 0};
+
+    private static Player user, opponent;
+    private static Board userBoard, enemyBoard;
+
+    public static void setUp() {
+        user = new HumanPlayer("Teun");
+        opponent = new HumanPlayer("Tim");
+
+        userBoard = new Board(user);
+        enemyBoard = new Board(opponent);
+    }
 
     public static GameState getGameState() {
         return gameState;
@@ -78,5 +92,21 @@ public class GameManager {
 
     public static int[] getCarrierShips() {
         return carrierShips;
+    }
+
+    public static Board getUserBoard() {
+        return userBoard;
+    }
+
+    public static Board getOpponentBoard() {
+        return enemyBoard;
+    }
+
+    public static Player getUser() {
+        return user;
+    }
+
+    public static Player getOpponent() {
+        return opponent;
     }
 }

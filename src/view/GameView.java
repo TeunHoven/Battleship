@@ -9,32 +9,27 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import model.GameManager;
 import model.board.Board;
 import model.player.HumanPlayer;
 import model.player.Player;
 
 public class GameView {
-    private Scene scene;
-    private Board userBoard, enemyBoard;
+    private static Scene scene;
     private static Label userLabel, enemyLabel, header, currShip;
     private Font myFont;
-    private Player user, opponent;
     private Controller controller;
 
-    private static GameState gameState;
-
     public GameView() {
-        this.user = new HumanPlayer("Teun");
-        this.opponent = new HumanPlayer("Tim");
+        GameManager.setUp();
+        Controller.setUp();
 
-        this.userBoard = new Board(user);
-        this.enemyBoard = new Board(opponent);
-
+        this.controller = Controller.sharedInstance;
         this.myFont = new Font(40);
 
-        this.userLabel = new Label(user.getName() + "'s Fleet");
+        this.userLabel = new Label(GameManager.getUser().getName() + "'s Fleet");
         userLabel.setFont(myFont);
-        this.enemyLabel = new Label(opponent.getName() + "'s Fleet");
+        this.enemyLabel = new Label(GameManager.getOpponent().getName() + "'s Fleet");
         enemyLabel.setFont(myFont);
 
         this.header = new Label("Battleship");
@@ -43,21 +38,17 @@ public class GameView {
         currShip.setFont(new Font(20));
 
         setView();
-
-        gameState = GameState.SETUP;
-
-        controller = new Controller(userBoard, enemyBoard);
     }
 
     private void setView() {
         BorderPane root = new BorderPane();
         root.setPrefSize(1280, 720);
 
-        VBox userSide = new VBox(20, userLabel, userBoard);
+        VBox userSide = new VBox(20, userLabel, GameManager.getUserBoard());
         userSide.getPrefWidth();
         userSide.setAlignment(Pos.CENTER);
 
-        VBox enemySide = new VBox(20, enemyLabel, enemyBoard);
+        VBox enemySide = new VBox(20, enemyLabel, GameManager.getOpponentBoard());
         enemySide.setAlignment(Pos.CENTER);
 
         HBox boards = new HBox(100, userSide, enemySide);
@@ -75,7 +66,7 @@ public class GameView {
         root.setCenter(boards);
 
         scene = new Scene(root);
-        scene.setOnKeyPressed(Controller.keyEvent);
+        scene.setOnKeyPressed(controller.keyEvent);
     }
 
     public Scene getScene() {

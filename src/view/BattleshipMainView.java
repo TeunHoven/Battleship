@@ -5,7 +5,7 @@ import javafx.stage.Stage;
 
 public class BattleshipMainView extends Application{
     private static Stage mainStage;
-    GameView game ;
+    GameView game;
 
     @Override
     public void start(Stage stage) throws Exception {
