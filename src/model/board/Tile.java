@@ -9,6 +9,7 @@ public class Tile extends Rectangle {
     private int x, y;
     private Ship ship;
     private boolean hasShip;
+    private boolean isShot;
     private Color tileColor;
     private Board board;
 
@@ -18,6 +19,7 @@ public class Tile extends Rectangle {
         this.y = y;
         this.ship = null;
         this.hasShip = false;
+        this.isShot = false;
         this.tileColor = Color.BLUE;
         this.board = board;
 
@@ -60,5 +62,13 @@ public class Tile extends Rectangle {
 
     public int getYPos() {
         return y;
+    }
+
+    public boolean isShot(){
+        return isShot;
+    }
+
+    public void setIsShot(boolean isShot){
+        this.isShot = isShot;
     }
 }

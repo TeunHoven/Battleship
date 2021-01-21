@@ -199,7 +199,21 @@ public class Controller {
 
     // All mouse events necessary for the USERROUND game state
     private void userRoundMouse(MouseEvent event) {
-
+        if(selectedTile.hasShip() && !selectedTile.isShot()) {
+            selectedTile.getShip().hitShip();
+            usersBoard.getPlayer().addPoint();
+            if(selectedTile.getShip().getShipLives() == 0) {
+                usersBoard.getPlayer().addPoint();
+            }
+            // PLAYER GETS ANOTHER TURN
+        } else if (selectedTile.isShot()) {
+            // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
+            // PLAYER GETS ANOTHER TURN
+        } else if (!selectedTile.hasShip()) {
+            // NOTIFY THE PLAYER OF A "MISS EVENT"
+            // END PLAYER TURN
+            selectedTile.isShot();
+        }
     }
 
     // All mouse events necessary for the ENEMYROUND game state

@@ -123,4 +123,8 @@ public class Board extends Parent {
     public void setHorizontal(boolean isHorizontal) {
         this.isHorizontal = isHorizontal;
     }
+
+    public Player getPlayer(){
+        return player;
+    }
 }
