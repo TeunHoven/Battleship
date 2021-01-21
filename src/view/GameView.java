@@ -41,16 +41,21 @@ public class GameView {
         enemyLabel = new Label(GameManager.getOpponent().getName() + "'s Fleet");
         enemyLabel.setFont(myFont);
 
+        userPoints = new Label("Points: 0");
+        userPoints.setFont(new Font(20));
+        enemyPoints = new Label("Points: 0");
+        enemyPoints.setFont(new Font(20));
+
         header = new Label("Battleship");
         header.setFont(new Font(50));
         currShip = new Label("Ship: none");
         currShip.setFont(new Font(20));
 
-        VBox userSide = new VBox(20, userLabel, GameManager.getUserBoard());
+        VBox userSide = new VBox(20, userLabel, userPoints, GameManager.getUserBoard());
         userSide.getPrefWidth();
         userSide.setAlignment(Pos.CENTER);
 
-        VBox enemySide = new VBox(20, enemyLabel, GameManager.getOpponentBoard());
+        VBox enemySide = new VBox(20, enemyLabel, enemyPoints, GameManager.getOpponentBoard());
         enemySide.setAlignment(Pos.CENTER);
 
         HBox boards = new HBox(100, userSide, enemySide);
@@ -79,7 +84,11 @@ public class GameView {
         currShip.setText("Ship: " + name);
     }
 
-    public static void setPoints(int points) {
+    public static void setUserPoints(int points) {
+        userPoints.setText("Points: " + points);
+    }
 
+    public static void setEnemyPoints(int points) {
+        enemyPoints.setText("Points: " + points);
     }
 }

@@ -103,7 +103,11 @@ public class Board extends Parent {
 
         for(int i=0; i < size; i++) {
             if(isHorizontal()) {
-                neighbours[i] = getTile(tile.getXPos() + i, tile.getYPos());
+                if(tile.getXPos()+i < 15) {
+                    neighbours[i] = getTile(tile.getXPos() + i, tile.getYPos());
+                } else {
+                    neighbours[i] = null;
+                }
             } else {
                 neighbours[i] = getTile(tile.getXPos(), tile.getYPos() + i);
             }
