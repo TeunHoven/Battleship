@@ -16,6 +16,7 @@ import model.player.Player;
 
 public class GameView {
     private static Scene scene;
+    private static BorderPane root;
     private static Label userLabel, enemyLabel, header, currShip;
     private Font myFont;
     private Controller controller;
@@ -25,24 +26,25 @@ public class GameView {
         Controller.setUp();
 
         this.controller = Controller.sharedInstance;
-        this.myFont = new Font(40);
-
-        this.userLabel = new Label(GameManager.getUser().getName() + "'s Fleet");
-        userLabel.setFont(myFont);
-        this.enemyLabel = new Label(GameManager.getOpponent().getName() + "'s Fleet");
-        enemyLabel.setFont(myFont);
-
-        this.header = new Label("Battleship");
-        header.setFont(new Font(50));
-        this.currShip = new Label("Ship: none");
-        currShip.setFont(new Font(20));
 
         setView();
     }
 
     private void setView() {
-        BorderPane root = new BorderPane();
+        root = new BorderPane();
         root.setPrefSize(1280, 720);
+
+        this.myFont = new Font(40);
+
+        userLabel = new Label(GameManager.getUser().getName() + "'s Fleet");
+        userLabel.setFont(myFont);
+        enemyLabel = new Label(GameManager.getOpponent().getName() + "'s Fleet");
+        enemyLabel.setFont(myFont);
+
+        header = new Label("Battleship");
+        header.setFont(new Font(50));
+        currShip = new Label("Ship: none");
+        currShip.setFont(new Font(20));
 
         VBox userSide = new VBox(20, userLabel, GameManager.getUserBoard());
         userSide.getPrefWidth();

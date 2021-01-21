@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 public class BattleshipMainView extends Application{
     private static Stage mainStage;
     GameView game;
+    long lastRefreshTime = 0;
 
     @Override
     public void start(Stage stage) throws Exception {

@@ -22,6 +22,7 @@ public class Controller {
     private static Board usersBoard, opponentsBoard;
     private static Ship selectedShip;
     private static Tile selectedTile;
+    private static Tile[] selectedTiles;
 
     private Controller() {
 
@@ -57,6 +58,7 @@ public class Controller {
                 default:
                     break;
             }
+            updateView();
         }
     };
 
@@ -83,64 +85,79 @@ public class Controller {
                 default:
                     break;
             }
+            updateView();
         }
     };
 
-    private void placeShip(Tile tile, Ship ship) {
-        Tile[] neighbourTiles = usersBoard.getTileNeighboursHorizontal(tile, selectedShip.getShipLength());
-        boolean validPlacement = !Arrays.asList(neighbourTiles).contains(null);
+    private void placeShip(Tile tile) {
+        if(selectedShip != null) {
+            selectedTiles = usersBoard.getTileNeighboursHorizontal(tile, selectedShip.getShipLength());
+            boolean validPlacement = !Arrays.asList(selectedTiles).contains(null);
 
-        if(validPlacement) {
-            if(selectedShip instanceof PatrolBoatShip) {
-                if(GameManager.canAddPatrolBoat()) {
-                    for (Tile t : neighbourTiles) {
-                        t.setHasShip(true);
-                        t.setColor(Color.GRAY);
+            if (validPlacement) {
+                if (selectedShip instanceof PatrolBoatShip) {
+                    if (GameManager.canAddPatrolBoat()) {
+                        for (Tile t : selectedTiles) {
+                            if(!t.hasShip()) {
+                                t.setHasShip(true);
+                                t.setColor(Color.GRAY);
+                            }
+                        }
                     }
                 }
-            }
 
-            if(selectedShip instanceof SuperPatrolShip) {
-                if(GameManager.canAddSuperPatrol()) {
-                    for (Tile t : neighbourTiles) {
-                        t.setHasShip(true);
-                        t.setColor(Color.GRAY);
+                if (selectedShip instanceof SuperPatrolShip) {
+                    if (GameManager.canAddSuperPatrol()) {
+                        for (Tile t : selectedTiles) {
+                            if(!t.hasShip()) {
+                                t.setHasShip(true);
+                                t.setColor(Color.GRAY);
+                            }
+                        }
                     }
                 }
-            }
 
-            if(selectedShip instanceof DestroyerShip) {
-                if(GameManager.canAddDestroyerShips()) {
-                    for (Tile t : neighbourTiles) {
-                        t.setHasShip(true);
-                        t.setColor(Color.GRAY);
+                if (selectedShip instanceof DestroyerShip) {
+                    if (GameManager.canAddDestroyerShips()) {
+                        for (Tile t : selectedTiles) {
+                            if(!t.hasShip()) {
+                                t.setHasShip(true);
+                                t.setColor(Color.GRAY);
+                            }
+                        }
                     }
                 }
-            }
 
-            if(selectedShip instanceof BattleShip) {
-                if(GameManager.canAddBattleshipShips()) {
-                    for (Tile t : neighbourTiles) {
-                        t.setHasShip(true);
-                        t.setColor(Color.GRAY);
+                if (selectedShip instanceof BattleShip) {
+                    if (GameManager.canAddBattleshipShips()) {
+                        for (Tile t : selectedTiles) {
+                            if(!t.hasShip()) {
+                                t.setHasShip(true);
+                                t.setColor(Color.GRAY);
+                            }
+                        }
                     }
                 }
-            }
 
-            if(selectedShip instanceof CarrierShip) {
-                if(GameManager.canAddCarrierShips()) {
-                    for (Tile t : neighbourTiles) {
-                        t.setHasShip(true);
-                        t.setColor(Color.GRAY);
+                if (selectedShip instanceof CarrierShip) {
+                    if (GameManager.canAddCarrierShips()) {
+                        for (Tile t : selectedTiles) {
+                            if(!t.hasShip()) {
+                                t.setHasShip(true);
+                                t.setColor(Color.GRAY);
+                            }
+                        }
                     }
                 }
-            }
 
-            if(selectedShip instanceof PatrolBoatShip) {
-                if(GameManager.canAddPatrolBoat()) {
-                    for (Tile t : neighbourTiles) {
-                        t.setHasShip(true);
-                        t.setColor(Color.GRAY);
+                if (selectedShip instanceof PatrolBoatShip) {
+                    if (GameManager.canAddPatrolBoat()) {
+                        for (Tile t : selectedTiles) {
+                            if(!t.hasShip()) {
+                                t.setHasShip(true);
+                                t.setColor(Color.GRAY);
+                            }
+                        }
                     }
                 }
             }
@@ -185,7 +202,7 @@ public class Controller {
     private void setUpMouse(MouseEvent event) {
         // Left click on the mouse
         if (event.getButton() == MouseButton.PRIMARY) {
-            placeShip(selectedTile, selectedShip);
+            placeShip(selectedTile);
         }
 
         // Right click on the mouse
@@ -218,6 +235,8 @@ public class Controller {
 
     // All keys events necessary for the SETUP game state
     private void setUpKeys(KeyEvent event) {
+        int shipsLeftover = 0;
+
         if(event.getCode() == KeyCode.E) {
             usersBoard.setHorizontal(!usersBoard.isHorizontal());
         }
@@ -229,9 +248,6 @@ public class Controller {
             } else {
                 selectedShip = new PatrolBoatShip(selectedTile.getXPos(), selectedTile.getYPos());
             }
-            int shipsLeftover = GameManager.getPatrolBoatShips()[0] - GameManager.getPatrolBoatShips()[1];
-
-            GameView.setSelectedShip(selectedShip.getName() + " " + shipsLeftover + "x");
         }
 
         // When key 2 is pressed, set ship to Super Patrol
@@ -241,9 +257,6 @@ public class Controller {
             } else {
                 selectedShip = new SuperPatrolShip(selectedTile.getXPos(), selectedTile.getYPos());
             }
-            int shipsLeftover = GameManager.getSuperPatrolShips()[0] - GameManager.getSuperPatrolShips()[1];
-
-            GameView.setSelectedShip(selectedShip.getName() + " " + shipsLeftover + "x");
         }
 
         // When key 3 is pressed, set ship to Destroyer
@@ -253,9 +266,6 @@ public class Controller {
             } else {
                 selectedShip = new DestroyerShip(selectedTile.getXPos(), selectedTile.getYPos());
             }
-            int shipsLeftover = GameManager.getDestroyerShips()[0] - GameManager.getDestroyerShips()[1];
-
-            GameView.setSelectedShip(selectedShip.getName() + " " + shipsLeftover + "x");
         }
 
         // When key 4 is pressed, set ship to Battleship
@@ -265,9 +275,6 @@ public class Controller {
             } else {
                 selectedShip = new BattleShip(selectedTile.getXPos(), selectedTile.getYPos());
             }
-            int shipsLeftover = GameManager.getBattleshipShips()[0] - GameManager.getBattleshipShips()[1];
-
-            GameView.setSelectedShip(selectedShip.getName() + " " + shipsLeftover + "x");
         }
 
         // When key 5 is pressed, set ship to Carrier
@@ -277,10 +284,10 @@ public class Controller {
             } else {
                 selectedShip = new CarrierShip(selectedTile.getXPos(), selectedTile.getYPos());
             }
-            int shipsLeftover = GameManager.getCarrierShips()[0] - GameManager.getCarrierShips()[1];
-
-            GameView.setSelectedShip(selectedShip.getName() + " " + shipsLeftover + "x");
         }
+
+        selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
+        updateView();
     }
 
     // All keys events necessary for the USERROUND game state
@@ -305,17 +312,19 @@ public class Controller {
     // All hover events necessary for the SETUP game state
     private void setUpHover() {
         if(selectedShip != null) {
-            Tile[] neighbourTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
-            boolean validPlacement = !Arrays.asList(neighbourTiles).contains(null);
+            selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
+            boolean validPlacement = !Arrays.asList(selectedTiles).contains(null);
 
             for (Tile t : usersBoard.getTiles()) {
-                if (validPlacement && Arrays.asList(neighbourTiles).contains(t)) {
+                if (validPlacement && Arrays.asList(selectedTiles).contains(t)) {
                     t.setColor(Color.GRAY);
                 } else if (!t.hasShip()) {
                     t.setColor(Color.BLUE);
                 }
             }
         }
+
+        updateView();
     }
 
     // All hover events necessary for the USERROUND game state
@@ -337,5 +346,48 @@ public class Controller {
     // All hover events necessary for the END game state
     private void endRoundHover() {
 
+    }
+
+    private int getShipsLeftOver() {
+        int shipsLeftOver = 0;
+
+        if(selectedShip instanceof CarrierShip) {
+            shipsLeftOver = GameManager.getCarrierShips()[0] - GameManager.getCarrierShips()[1];
+        }
+
+        if(selectedShip instanceof BattleShip) {
+            shipsLeftOver = GameManager.getBattleshipShips()[0] - GameManager.getBattleshipShips()[1];
+        }
+
+        if(selectedShip instanceof DestroyerShip) {
+            shipsLeftOver = GameManager.getDestroyerShips()[0] - GameManager.getDestroyerShips()[1];
+        }
+
+        if(selectedShip instanceof SuperPatrolShip) {
+            shipsLeftOver = GameManager.getSuperPatrolShips()[0] - GameManager.getSuperPatrolShips()[1];
+        }
+
+        if(selectedShip instanceof PatrolBoatShip) {
+            shipsLeftOver = GameManager.getPatrolBoatShips()[0] - GameManager.getPatrolBoatShips()[1];
+        }
+
+        return shipsLeftOver;
+    }
+
+    private void updateView() {
+        if(selectedShip != null)
+            GameView.setSelectedShip(selectedShip.getName() + " " + getShipsLeftOver() + "x");
+
+        if(selectedTiles != null) {
+            for (Tile t : usersBoard.getTiles()) {
+                if(Arrays.asList(selectedTiles).contains(t)) {
+                    t.setColor(Color.GRAY);
+                } else if(t.hasShip()) {
+                    t.setColor(Color.GRAY);
+                } else {
+                    t.setColor(Color.BLUE);
+                }
+            }
+        }
     }
 }
