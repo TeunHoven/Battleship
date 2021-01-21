@@ -212,13 +212,15 @@ public class Controller {
                 usersBoard.getPlayer().addPoint();
             }
             // PLAYER GETS ANOTHER TURN
+            // RESET 30s TIMER
         } else if (selectedTile.isShot()) {
             // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
             // PLAYER GETS ANOTHER TURN
         } else if (!selectedTile.hasShip()) {
             // NOTIFY THE PLAYER OF A "MISS EVENT"
             // END PLAYER TURN
-            selectedTile.isShot();
+            selectedTile.setIsShot(true);
+            GameManager.setGameState(GameState.ENEMYROUND);
         }
     }
 

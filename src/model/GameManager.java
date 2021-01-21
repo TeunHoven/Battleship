@@ -29,6 +29,10 @@ public class GameManager {
         return gameState;
     }
 
+    public static void setGameState(GameState gamestate){
+        gameState = gamestate;
+    }
+
     public static boolean canAddPatrolBoat(){
         if(patrolBoatShips[1] < patrolBoatShips[0]) {
             patrolBoatShips[1]++;
