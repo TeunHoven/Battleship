@@ -142,7 +142,7 @@ public class Controller {
                 if (selectedShip instanceof CarrierShip) {
                     if (GameManager.canAddCarrierShips()) {
                         for (Tile t : selectedTiles) {
-                            if(!t.hasShip()) {
+                            if (!t.hasShip()) {
                                 t.setHasShip(true);
                                 t.setColor(Color.GRAY);
                             }

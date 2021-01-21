@@ -6,13 +6,15 @@ public class Ship {
     int shipLives;
     int posX;
     int posY;
+    boolean isHorizontal;
 
-    public Ship(int shipLength, int shipLives, int posX, int posY, String name) {
+    public Ship(int shipLength, int shipLives, int posX, int posY, String name, boolean isHorizontal) {
         this.shipLength = shipLength;
         this.shipLives = shipLives;
         this.posX = posX;
         this.posY = posY;
         this.name = name;
+        this.isHorizontal = isHorizontal;
     }
 
     public int getShipLength(){
