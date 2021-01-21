@@ -210,6 +210,7 @@ public class Controller {
         if(selectedTile.hasShip() && !selectedTile.isShot()) {
             selectedTile.getShip().hitShip();
             usersBoard.getPlayer().addPoint();
+            selectedTile.setIsShot(true);
             if(selectedTile.getShip().getShipLives() == 0) {
                 usersBoard.getPlayer().addPoint();
             }
