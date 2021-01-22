@@ -2,6 +2,7 @@ package model;
 
 import controller.GameState;
 import model.board.Board;
+import model.player.ComputerPlayer;
 import model.player.HumanPlayer;
 import model.player.Player;
 
@@ -19,10 +20,14 @@ public class GameManager {
 
     public static void setUp() {
         user = new HumanPlayer("Teun");
-        opponent = new HumanPlayer("Tim");
+        opponent = new ComputerPlayer();
 
         userBoard = new Board(user);
         enemyBoard = new Board(opponent);
+
+        if(opponent instanceof ComputerPlayer) {
+            ((ComputerPlayer) opponent).setUp();
+        }
     }
 
     public static GameState getGameState() {

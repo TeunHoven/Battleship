@@ -100,6 +100,7 @@ public class Controller {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
                                 t.setHasShip(true);
+                                t.setShip(new PatrolBoatShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
                                 t.setColor(Color.GRAY);
                             }
                         }
@@ -110,8 +111,7 @@ public class Controller {
                     if (GameManager.canAddSuperPatrol()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
-                                SuperPatrolShip sps = new SuperPatrolShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
-                                t.setShip(sps);
+                                t.setShip(new SuperPatrolShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
                                 t.setHasShip(true);
                                 t.setColor(Color.GRAY);
                             }
@@ -123,6 +123,7 @@ public class Controller {
                     if (GameManager.canAddDestroyerShips()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
+                                t.setShip(new DestroyerShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
                                 t.setHasShip(true);
                                 t.setColor(Color.GRAY);
                             }
@@ -134,6 +135,7 @@ public class Controller {
                     if (GameManager.canAddBattleshipShips()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
+                                t.setShip(new BattleShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
                                 t.setHasShip(true);
                                 t.setColor(Color.GRAY);
                             }
@@ -145,6 +147,7 @@ public class Controller {
                     if (GameManager.canAddCarrierShips()) {
                         for (Tile t : selectedTiles) {
                             if (!t.hasShip()) {
+                                t.setShip(new CarrierShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
                                 t.setHasShip(true);
                                 t.setColor(Color.GRAY);
                             }
