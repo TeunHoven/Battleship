@@ -99,9 +99,10 @@ public class Controller {
                     if (GameManager.canAddPatrolBoat()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
+                                Ship ship = new PatrolBoatShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
+                                t.setShip(ship);
                                 t.setHasShip(true);
-                                t.setShip(new PatrolBoatShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
-                                t.setColor(Color.GRAY);
+                                usersBoard.setShip(selectedTile, ship);
                             }
                         }
                     }
@@ -111,9 +112,10 @@ public class Controller {
                     if (GameManager.canAddSuperPatrol()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
-                                t.setShip(new SuperPatrolShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
+                                Ship ship = new SuperPatrolShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
+                                t.setShip(ship);
                                 t.setHasShip(true);
-                                t.setColor(Color.GRAY);
+                                usersBoard.setShip(selectedTile, ship);
                             }
                         }
                     }
@@ -123,9 +125,10 @@ public class Controller {
                     if (GameManager.canAddDestroyerShips()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
-                                t.setShip(new DestroyerShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
+                                Ship ship = new DestroyerShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
+                                t.setShip(ship);
                                 t.setHasShip(true);
-                                t.setColor(Color.GRAY);
+                                usersBoard.setShip(selectedTile, ship);
                             }
                         }
                     }
@@ -135,9 +138,10 @@ public class Controller {
                     if (GameManager.canAddBattleshipShips()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
-                                t.setShip(new BattleShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
+                                Ship ship = new BattleShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
+                                t.setShip(ship);
                                 t.setHasShip(true);
-                                t.setColor(Color.GRAY);
+                                usersBoard.setShip(selectedTile, ship);
                             }
                         }
                     }
@@ -147,9 +151,10 @@ public class Controller {
                     if (GameManager.canAddCarrierShips()) {
                         for (Tile t : selectedTiles) {
                             if (!t.hasShip()) {
-                                t.setShip(new CarrierShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal()));
+                                Ship ship = new CarrierShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
+                                t.setShip(ship);
                                 t.setHasShip(true);
-                                t.setColor(Color.GRAY);
+                                usersBoard.setShip(selectedTile, ship);
                             }
                         }
                     }

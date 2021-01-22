@@ -11,8 +11,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Rotate;
 import model.player.Player;
+import model.ship.Ship;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,5 +133,39 @@ public class Board extends Parent {
 
     public Player getPlayer(){
         return player;
+    }
+
+    public void setShip(Tile tile, Ship ship) {
+        double width = (30*ship.getShipLength())-8;
+        double labelCentre = (width/2)-(2.2*ship.getName().toCharArray().length);
+
+        Label label = new Label(ship.getName());
+        Rectangle rect = new Rectangle(20, 20);
+
+        label.setTextFill(Color.WHITE);
+
+        if(!ship.isHorizontal()) { // Vertical
+            label.setRotate(90);
+            label.setTranslateX((tile.getXPos()+1)*(Tile.SIZE+1)+labelCentre);
+            label.setTranslateY((tile.getYPos()+1)*(Tile.SIZE+1));
+            label.setFont(new Font(13));
+
+            // Ship rectangle
+            rect.setX(5+(tile.getXPos()+1)*(Tile.SIZE+1.3));
+            rect.setY(5+(tile.getYPos()+1)*(Tile.SIZE+1.3));
+            rect.setHeight(width);
+        } else { // Horizontal
+            label.setTranslateX((tile.getXPos()+1)*(Tile.SIZE+1)+labelCentre);
+            label.setTranslateY(5+(tile.getYPos()+1)*(Tile.SIZE+1));
+            label.setFont(new Font(13));
+
+            // Ship rectangle
+            rect.setX(5+(tile.getXPos()+1)*(Tile.SIZE+1.3));
+            rect.setY(5+(tile.getYPos()+1)*(Tile.SIZE+1.3));
+            rect.setWidth(width);
+        }
+
+        getChildren().add(rect);
+        getChildren().add(label);
     }
 }

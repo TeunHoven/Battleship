@@ -156,6 +156,7 @@ public class ComputerPlayer extends Player {
                         placeShip(x, y, false);
                         hasPlaced = true;
                     }
+                    default -> {}
                 }
 
                 if(hasPlaced) {
@@ -163,7 +164,7 @@ public class ComputerPlayer extends Player {
                 }
             }
 
-            if(ships[3] == 3 && ships[4] == 2) {
+            if(ships[0] == 10 && ships[1] == 8 && ships[2] == 5 && ships[3] == 3 && ships[4] == 2) {
                 isPlaced = true;
             }
         }
@@ -172,6 +173,7 @@ public class ComputerPlayer extends Player {
     private void placeShip(int x, int y, boolean horizontal) {
         Tile tile = board.getTile(x, y);
         board.setHorizontal(horizontal);
+        currShip.setHorizontal(horizontal);
         Tile[] tiles = board.getTileNeighboursHorizontal(tile, currShip.getShipLength());
 
         for(Tile t: tiles) {
@@ -179,6 +181,8 @@ public class ComputerPlayer extends Player {
             t.setHasShip(true);
             t.setColor(Color.GRAY);
         }
+
+        board.setShip(tile, currShip);
     }
 
     /**
@@ -189,6 +193,7 @@ public class ComputerPlayer extends Player {
      */
     private int canPlaceShip(int x, int y) {
         Tile tile = board.getTile(x, y);
+        board.setHorizontal(true);
         Tile[] tiles = board.getTileNeighboursHorizontal(tile, currShip.getShipLength());
 
         boolean canHorizontal = isValidPlacement(tile);
@@ -241,7 +246,6 @@ public class ComputerPlayer extends Player {
         }
 
         if(board.isHorizontal()) {
-            System.out.println("Normal: " + tile.getYPos());
             for(Tile t: tiles) {
                 if(t.getYPos() != tile.getYPos()) {
                     return false;

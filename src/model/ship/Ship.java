@@ -1,6 +1,7 @@
 package model.ship;
 
 import javafx.scene.control.Label;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
 public class Ship {
@@ -10,7 +11,6 @@ public class Ship {
     int posX;
     int posY;
     boolean isHorizontal;
-    Label nameLabel;
 
     public Ship(int shipLength, int shipLives, int posX, int posY, String name, boolean isHorizontal) {
         this.shipLength = shipLength;
@@ -19,8 +19,6 @@ public class Ship {
         this.posY = posY;
         this.name = name;
         this.isHorizontal = isHorizontal;
-        this.nameLabel = new Label(name);
-        this.nameLabel.setFont(new Font(15));
     }
 
     public int getShipLength(){
@@ -47,7 +45,11 @@ public class Ship {
         return name;
     }
 
-    public Label getNameLabel() {
-        return nameLabel;
+    public boolean isHorizontal() {
+        return isHorizontal;
+    }
+
+    public void setHorizontal(boolean horizontal) {
+        this.isHorizontal = horizontal;
     }
 }
