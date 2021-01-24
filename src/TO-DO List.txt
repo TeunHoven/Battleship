@@ -1,7 +1,7 @@
 TO-DO LIST:
 [GAME]:
 - AI implemented (schepen neerzetten af)
-- Benaming schepen op het scherm
+- Benaming schepen op het scherm X
 - Score view laten zien
 - Determine winner function + type of victory
 - Chatbox

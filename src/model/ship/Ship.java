@@ -52,4 +52,16 @@ public class Ship {
     public void setHorizontal(boolean horizontal) {
         this.isHorizontal = horizontal;
     }
+
+    @Override
+    public String toString() {
+        String nameString = "Ship";
+        if(name.length() > 1) {
+            nameString = name.substring(0, name.length() - 3);
+        } else {
+            nameString = "Patrol Boat";
+        }
+
+        return nameString;
+    }
 }

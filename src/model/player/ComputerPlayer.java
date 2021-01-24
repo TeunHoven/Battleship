@@ -168,8 +168,6 @@ public class ComputerPlayer extends Player {
             t.setShip(currShip);
             t.setHasShip(true);
         }
-
-        board.setShip(tile, currShip);
     }
 
     /**

@@ -155,6 +155,8 @@ public class Controller {
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
+
+                                selectedShip = new CarrierShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                             }
                         }
                     }
@@ -408,7 +410,7 @@ public class Controller {
 
     private void updateView() {
         if(selectedShip != null)
-            GameView.setSelectedShip(selectedShip.getName() + " " + getShipsLeftOver() + "x");
+            GameView.setSelectedShip(selectedShip.toString() + " " + getShipsLeftOver() + "x");
 
         if(selectedTiles != null) {
             for (Tile t : usersBoard.getTiles()) {
