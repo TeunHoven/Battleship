@@ -99,7 +99,7 @@ public class Controller {
                     if (GameManager.canAddPatrolBoat()) {
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
-                                Ship ship = new PatrolBoatShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
+                                Ship ship = new PatrolBoatShip(tile.getXPos(), tile.getYPos(), true);
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -371,7 +371,6 @@ public class Controller {
             return false;
         }
         if(usersBoard.isHorizontal()) {
-            System.out.println("Normal: " + selectedTile.getYPos());
             for(Tile t: selectedTiles) {
                 if(t.getYPos() != selectedTile.getYPos()) {
                     return false;
@@ -414,8 +413,6 @@ public class Controller {
         if(selectedTiles != null) {
             for (Tile t : usersBoard.getTiles()) {
                 if(Arrays.asList(selectedTiles).contains(t)) {
-                    t.setColor(Color.GRAY);
-                } else if(t.hasShip()) {
                     t.setColor(Color.GRAY);
                 } else {
                     t.setColor(Color.BLUE);

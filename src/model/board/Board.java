@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
+import model.player.ComputerPlayer;
 import model.player.Player;
 import model.ship.Ship;
 
@@ -136,33 +137,40 @@ public class Board extends Parent {
     }
 
     public void setShip(Tile tile, Ship ship) {
-        double width = (30*ship.getShipLength())-8;
-        double labelCentre = (width/2)-(2.2*ship.getName().toCharArray().length);
+        double width = (30*ship.getShipLength())-10;
+        double labelCentre = (width/2)-(2.5*ship.getName().toCharArray().length);
 
         Label label = new Label(ship.getName());
         Rectangle rect = new Rectangle(20, 20);
+        label.setFont(new Font(13));
 
+        rect.setFill(Color.BLACK);
         label.setTextFill(Color.WHITE);
 
         if(!ship.isHorizontal()) { // Vertical
-            label.setRotate(90);
-            label.setTranslateX((tile.getXPos()+1)*(Tile.SIZE+1)+labelCentre);
-            label.setTranslateY((tile.getYPos()+1)*(Tile.SIZE+1));
-            label.setFont(new Font(13));
-
             // Ship rectangle
             rect.setX(5+(tile.getXPos()+1)*(Tile.SIZE+1.3));
             rect.setY(5+(tile.getYPos()+1)*(Tile.SIZE+1.3));
             rect.setHeight(width);
-        } else { // Horizontal
-            label.setTranslateX((tile.getXPos()+1)*(Tile.SIZE+1)+labelCentre);
-            label.setTranslateY(5+(tile.getYPos()+1)*(Tile.SIZE+1));
-            label.setFont(new Font(13));
 
+            Rotate rotation = new Rotate();
+
+            rotation.setPivotX(label.getTranslateX());
+            rotation.setPivotY(label.getTranslateY());
+
+            label.getTransforms().add(rotation);
+            rotation.setAngle(90);
+
+            label.setTranslateX(25+(tile.getXPos()+1)*(Tile.SIZE+1.3));
+            label.setTranslateY(rect.getY()+labelCentre);
+        } else { // Horizontal
             // Ship rectangle
             rect.setX(5+(tile.getXPos()+1)*(Tile.SIZE+1.3));
             rect.setY(5+(tile.getYPos()+1)*(Tile.SIZE+1.3));
             rect.setWidth(width);
+
+            label.setTranslateX(rect.getX()+labelCentre);
+            label.setTranslateY(5+(tile.getYPos()+1)*(Tile.SIZE+1.3));
         }
 
         getChildren().add(rect);

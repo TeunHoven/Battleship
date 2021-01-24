@@ -139,24 +139,12 @@ public class ComputerPlayer extends Player {
             while(ships[0] < 10) { // Patrol boats 10 max
                 int x = (int) (14*Math.random());
                 int y = (int) (9*Math.random());
-                int horizontal = (int) (2*Math.random()); // 0 horizontal, 1 vertical
                 boolean hasPlaced = false;
 
                 currShip = new PatrolBoatShip(x, y, true);
-                switch (canPlaceShip(x, y)) {
-                    case 0 -> {
-                        placeShip(x, y, horizontal == 0);
-                        hasPlaced = true;
-                    }
-                    case 1 -> {
-                        placeShip(x, y, true);
-                        hasPlaced = true;
-                    }
-                    case 2 -> {
-                        placeShip(x, y, false);
-                        hasPlaced = true;
-                    }
-                    default -> {}
+                if(canPlaceShip(x, y) == 0 || canPlaceShip(x, y) == 1) {
+                    placeShip(x, y, true);
+                    hasPlaced = true;
                 }
 
                 if(hasPlaced) {
@@ -179,7 +167,6 @@ public class ComputerPlayer extends Player {
         for(Tile t: tiles) {
             t.setShip(currShip);
             t.setHasShip(true);
-            t.setColor(Color.GRAY);
         }
 
         board.setShip(tile, currShip);
