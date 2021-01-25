@@ -331,20 +331,22 @@ public class Controller {
 
     // All hover events necessary for the SETUP game state
     private void setUpHover() {
-        if(selectedShip != null) {
-            selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
-            boolean validPlacement = isValidPlacement();
+        if(selectedTile.getBoard() == usersBoard) {
+            if (selectedShip != null) {
+                selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
+                boolean validPlacement = isValidPlacement();
 
-            for (Tile t : usersBoard.getTiles()) {
-                if (validPlacement && Arrays.asList(selectedTiles).contains(t)) {
-                    t.setColor(Color.GRAY);
-                } else if (!t.hasShip()) {
-                    t.setColor(Color.BLUE);
+                for (Tile t : usersBoard.getTiles()) {
+                    if (validPlacement && Arrays.asList(selectedTiles).contains(t)) {
+                        t.setColor(Color.GRAY);
+                    } else if (!t.hasShip()) {
+                        t.setColor(Color.BLUE);
+                    }
                 }
             }
-        }
 
-        updateView();
+            updateView();
+        }
     }
 
     // All hover events necessary for the USERROUND game state
