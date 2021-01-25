@@ -6,8 +6,10 @@ public class Player {
     String name;
     Ship[] ships;
     int points;
+    boolean isReady;
 
     public Player(String name) {
+        this.isReady = false;
         setName(name);
 
         resetPoints();
@@ -39,5 +41,13 @@ public class Player {
 
     public int getPoints() {
         return points;
+    }
+
+    public boolean isReady() {
+        return isReady;
+    }
+
+    public void setReady() {
+        this.isReady = true;
     }
 }

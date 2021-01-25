@@ -1,12 +1,9 @@
 package model.board;
 
 import controller.Controller;
-import javafx.beans.value.ChangeListener;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -14,12 +11,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
-import model.player.ComputerPlayer;
 import model.player.Player;
 import model.ship.Ship;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Board extends Parent {
     private Player player;

@@ -351,13 +351,14 @@ public class Controller {
     private void setUpHover() {
         if(tileOnUsersBoard()) {
             if (selectedShip != null) {
-                selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
                 boolean validPlacement = isValidPlacement();
 
                 for (Tile t : usersBoard.getTiles()) {
                     if (validPlacement && Arrays.asList(selectedTiles).contains(t)) {
                         t.setColor(Color.GRAY);
                     } else if (!t.hasShip()) {
+                        t.setColor(Color.BLUE);
+                    } else {
                         t.setColor(Color.BLUE);
                     }
                 }
@@ -392,6 +393,7 @@ public class Controller {
     }
 
     private boolean isValidPlacement() {
+        selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
         if(Arrays.asList(selectedTiles).contains(null)) {
             return false;
         }
@@ -402,7 +404,32 @@ public class Controller {
                 }
             }
         }
+
+        for(Tile t: selectedTiles) {
+            if(t.hasShip()) {
+                return false;
+            }
+        }
         return true;
+    }
+
+    private int isValidPlacement(int x, int y) {
+        usersBoard.setHorizontal(true);
+
+        boolean canHorizontal = isValidPlacement();
+
+        usersBoard.setHorizontal(false);
+        boolean canVertical = isValidPlacement();
+
+        if(canHorizontal && canVertical) {
+            return 0;
+        } else if(canHorizontal) {
+            return 1;
+        } else if(canVertical) {
+            return 2;
+        } else {
+            return 3;
+        }
     }
 
     private int getShipsLeftOver() {
@@ -442,7 +469,7 @@ public class Controller {
 
         if(selectedTiles != null) {
             for (Tile t : usersBoard.getTiles()) {
-                if(Arrays.asList(selectedTiles).contains(t)) {
+                if(GameManager.getGameState() == GameState.SETUP && Arrays.asList(selectedTiles).contains(t)) {
                     t.setColor(Color.GRAY);
                 } else {
                     t.setColor(Color.BLUE);
@@ -463,5 +490,69 @@ public class Controller {
             return true;
         else
             return false;
+    }
+
+    public void readyButtonClicked() {
+        usersBoard.getPlayer().setReady();
+        GameView.setTopBox();
+        updateView();
+    }
+
+    /**
+     * When the randomize button is clicked it will randomize all ship placements
+     */
+    public void randomizeButtonClicked() {
+        while(GameManager.getCarrierShips()[1] < GameManager.getCarrierShips()[0]) { // Carrier ships 2 max
+            selectedShip = new CarrierShip(0, 0, true);
+            randomizePlacement();
+        }
+
+        while(GameManager.getBattleshipShips()[1] < GameManager.getBattleshipShips()[0]) { // Battleships 3 max
+            selectedShip = new BattleShip(0, 0, true);
+            randomizePlacement();
+        }
+
+        while(GameManager.getDestroyerShips()[1] < GameManager.getDestroyerShips()[0]) { // Destroyer ships 5 max
+            selectedShip = new DestroyerShip(0, 0, true);
+            randomizePlacement();
+        }
+
+        while(GameManager.getSuperPatrolShips()[1] < GameManager.getSuperPatrolShips()[0]) { // Super Patrol 8 max
+            selectedShip = new SuperPatrolShip(0, 0, true);
+            randomizePlacement();
+        }
+
+        while(GameManager.getPatrolBoatShips()[1] < GameManager.getPatrolBoatShips()[0]) { // Patrol boats 10 max
+            selectedShip = new PatrolBoatShip(0, 0, true);
+            randomizePlacement();
+        }
+
+        updateView();
+    }
+
+    /**
+     * The function that randomizeButtonClicked uses to randomize everything
+     */
+    private void randomizePlacement() {
+        int x = (int) (14*Math.random());
+        int y = (int) (9*Math.random());
+        int horizontal = (int) (2*Math.random()); // 0 horizontal, 1 vertical
+
+        selectedTile = usersBoard.getTile(x, y);
+
+        switch (isValidPlacement(x, y)) {
+            case 0 -> {
+                usersBoard.setHorizontal(horizontal == 0);
+                placeShip(selectedTile);
+            }
+            case 1 -> {
+                usersBoard.setHorizontal(true);
+                placeShip(selectedTile);
+            }
+            case 2 -> {
+                usersBoard.setHorizontal(false);
+                placeShip(selectedTile);
+            }
+        }
     }
 }

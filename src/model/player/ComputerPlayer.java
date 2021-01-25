@@ -154,6 +154,8 @@ public class ComputerPlayer extends Player {
 
             if(ships[0] == 10 && ships[1] == 8 && ships[2] == 5 && ships[3] == 3 && ships[4] == 2) {
                 isPlaced = true;
+                setReady();
+                GameManager.checkRound();
             }
         }
     }

@@ -4,6 +4,7 @@ import controller.Controller;
 import controller.GameState;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -19,6 +20,8 @@ public class GameView {
     private static Scene scene;
     private static BorderPane root;
     private static Label userLabel, enemyLabel, header, currShip, userPoints, enemyPoints, messageLabel, roundLabel;
+    private static Button randomizeButton, readyButton;
+    private static VBox topBox;
     private Font myFont;
     private Controller controller;
 
@@ -57,9 +60,6 @@ public class GameView {
         roundLabel = new Label("Setup");
         roundLabel.setFont(new Font(15));
 
-        currShip = new Label("Ship: none");
-        currShip.setFont(new Font(20));
-
         VBox userSide = new VBox(20, userLabel, userPoints, GameManager.getUserBoard());
         userSide.getPrefWidth();
         userSide.setAlignment(Pos.CENTER);
@@ -70,12 +70,24 @@ public class GameView {
         HBox boards = new HBox(100, userSide, enemySide);
         boards.setAlignment(Pos.CENTER);
 
-        HBox ship = new HBox(0, currShip);
-        ship.setAlignment(Pos.TOP_LEFT);
         VBox headerBox = new VBox(0, header, messageLabel, roundLabel);
         headerBox.setAlignment(Pos.CENTER);
 
-        VBox topBox = new VBox(10, headerBox, ship);
+        currShip = new Label("Ship: none");
+        currShip.setFont(new Font(20));
+
+        randomizeButton = new Button("Randomize placement!");
+        randomizeButton.setFont(new Font(12));
+        randomizeButton.setOnAction(e -> controller.randomizeButtonClicked());
+
+        readyButton = new Button("Ready");
+        readyButton.setFont(new Font(12));
+        readyButton.setOnAction(e -> controller.readyButtonClicked());
+
+        VBox userInfo = new VBox(0, currShip, randomizeButton, readyButton);
+        userInfo.setAlignment(Pos.TOP_LEFT);
+
+        topBox = new VBox(10, headerBox, userInfo);
         topBox.setAlignment(Pos.CENTER);
 
         root.setTop(topBox);
@@ -107,5 +119,12 @@ public class GameView {
 
     public static void setRound(String round) {
         roundLabel.setText(round);
+    }
+
+    public static void setTopBox() {
+        VBox headerBox = new VBox(0, header, messageLabel, roundLabel);
+        headerBox.setAlignment(Pos.CENTER);
+        topBox = new VBox(10, headerBox);
+        root.setTop(topBox);
     }
 }
