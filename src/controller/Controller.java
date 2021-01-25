@@ -92,14 +92,20 @@ public class Controller {
     private void placeShip(Tile tile) {
         if(selectedShip != null) {
             selectedTiles = usersBoard.getTileNeighboursHorizontal(tile, selectedShip.getShipLength());
-            boolean validPlacement = !Arrays.asList(selectedTiles).contains(null);
+            boolean validPlacement = true;
+
+            for(Tile t: selectedTiles) {
+                if(t == null || t.hasShip()) {
+                    validPlacement = false;
+                }
+            }
 
             if (validPlacement) {
                 if (selectedShip instanceof PatrolBoatShip) {
                     if (GameManager.canAddPatrolBoat()) {
+                        Ship ship = new PatrolBoatShip(tile.getXPos(), tile.getYPos(), true);
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
-                                Ship ship = new PatrolBoatShip(tile.getXPos(), tile.getYPos(), true);
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -111,8 +117,8 @@ public class Controller {
                 if (selectedShip instanceof SuperPatrolShip) {
                     if (GameManager.canAddSuperPatrol()) {
                         for (Tile t : selectedTiles) {
+                            Ship ship = new SuperPatrolShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                             if(!t.hasShip()) {
-                                Ship ship = new SuperPatrolShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -124,8 +130,8 @@ public class Controller {
                 if (selectedShip instanceof DestroyerShip) {
                     if (GameManager.canAddDestroyerShips()) {
                         for (Tile t : selectedTiles) {
+                            Ship ship = new DestroyerShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                             if(!t.hasShip()) {
-                                Ship ship = new DestroyerShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -136,9 +142,9 @@ public class Controller {
 
                 if (selectedShip instanceof BattleShip) {
                     if (GameManager.canAddBattleshipShips()) {
+                        Ship ship = new BattleShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                         for (Tile t : selectedTiles) {
                             if(!t.hasShip()) {
-                                Ship ship = new BattleShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -149,9 +155,9 @@ public class Controller {
 
                 if (selectedShip instanceof CarrierShip) {
                     if (GameManager.canAddCarrierShips()) {
+                        Ship ship = new CarrierShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                         for (Tile t : selectedTiles) {
-                            if (!t.hasShip()) {
-                                Ship ship = new CarrierShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
+                            if (t != null && !t.hasShip()) {
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -208,10 +214,7 @@ public class Controller {
 
         // Right click on the mouse
         if (event.getButton() == MouseButton.SECONDARY) {
-            if (event.getSource() instanceof Tile) { // When a tile is clicked
-                Tile tile = (Tile) event.getSource();
-                tileClickedRightButton(tile);
-            }
+            // Does nothing yet
         }
     }
 
