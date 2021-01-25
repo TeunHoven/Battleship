@@ -35,14 +35,14 @@ public class GameManager {
     public static void checkRound() {
         switch(gameState) {
             case SETUP:
-                if((patrolBoatShips[0] == patrolBoatShips[1]) && (superPatrolShips[0] == superPatrolShips[1])
-                        && (destroyerShips[0] == destroyerShips[1]) && (battleshipShips[0] == battleshipShips[1]) && (carrierShips[0] == carrierShips[1])) {
+                if(userBoard.getPlayer().isReady() && enemyBoard.getPlayer().isReady()) {
                     userBoard.setColor(Color.BLUE);
                     setGameState(GameState.USERROUND);
                     GameView.setRound("Your round");
                 }
                 break;
             case USERROUND:
+                GameView.setMessage("Click a tile!");
                 break;
             case ENEMYROUND:
                 break;
