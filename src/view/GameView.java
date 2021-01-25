@@ -50,7 +50,7 @@ public class GameView {
         header = new Label("Battleship");
         header.setFont(new Font(50));
 
-        messageLabel = new Label("");
+        messageLabel = new Label("Press 1-5 to select a ship and click on a tile to place it!");
         messageLabel.setFont(new Font(20));
         messageLabel.setTextFill(Color.RED);
 

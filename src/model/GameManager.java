@@ -7,7 +7,7 @@ import model.player.HumanPlayer;
 import model.player.Player;
 
 public class GameManager {
-    private static GameState gameState = GameState.USERROUND;
+    private static GameState gameState = GameState.SETUP;
 
     private static int[] patrolBoatShips = {10, 0};
     private static int[] superPatrolShips = {8, 0};

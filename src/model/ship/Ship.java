@@ -56,7 +56,7 @@ public class Ship {
     @Override
     public String toString() {
         String nameString = "Ship";
-        if(name.length() > 1) {
+        if(name.length() > 2) {
             nameString = name.substring(0, name.length() - 3);
         } else {
             nameString = "Patrol Boat";
