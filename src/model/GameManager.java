@@ -232,6 +232,7 @@ public class GameManager {
         }
     }
 
+    // get user kills
     public static int[] getUserKills(){
         return userKills;
     }

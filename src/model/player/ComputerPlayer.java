@@ -240,4 +240,13 @@ public class ComputerPlayer extends Player {
         }
         return true;
     }
+
+    public int[] randomShot(){
+        int x = (int) (14*Math.random());
+        int y = (int) (9*Math.random());
+        int[] shot = {x, y};
+        return shot;
+    }
+
+
 }

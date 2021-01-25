@@ -73,6 +73,9 @@ public class GameView {
         VBox headerBox = new VBox(0, header, messageLabel, roundLabel);
         headerBox.setAlignment(Pos.CENTER);
 
+        roundLabel = new Label("Setup");
+        roundLabel.setFont(new Font(15));
+
         currShip = new Label("Ship: none");
         currShip.setFont(new Font(20));
 

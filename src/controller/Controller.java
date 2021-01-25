@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import model.GameManager;
 import model.board.Board;
 import model.board.Tile;
+import model.player.ComputerPlayer;
 import model.player.Player;
 import model.ship.*;
 import view.GameView;
@@ -190,6 +191,11 @@ public class Controller {
 
             case ENEMYROUND:
                 enemyRoundHover();
+                try {
+                    computerPlayerTurn();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             case END:
@@ -570,5 +576,36 @@ public class Controller {
                 placeShip(selectedTile);
             }
         }
+    }
+
+    public static void computerPlayerTurn() throws InterruptedException {
+        while(true) {
+            Thread.sleep(2000);
+            int[] posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
+            Tile tile = usersBoard.getTile(posTile[0], posTile[1]);
+            while (tile.isShot()) {
+                posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
+                tile = usersBoard.getTile(posTile[0], posTile[1]);
+            }
+            if (!tile.hasShip()) {
+                usersBoard.setShot(tile, false);
+                break;
+                // miss event
+            } else {
+                tile.getShip().hitShip();
+                opponentsBoard.getPlayer().addPoint();
+                tile.setIsShot(true);
+                usersBoard.setShot(tile, true);
+                if (tile.getShip().getShipLives() == 0) {
+                    GameManager.addKill(tile.getShip(), opponentsBoard.getPlayer());
+                    opponentsBoard.getPlayer().addPoint();
+                    if (GameManager.checkGameEnd() == 1 || GameManager.checkGameEnd() == 2) {
+                        GameView.setMessage(GameManager.getWinner() + " is the winner!");
+                        GameManager.setGameState(GameState.END);
+                    }
+                }
+            }
+        }
+        GameManager.setGameState(GameState.USERROUND);
     }
 }
