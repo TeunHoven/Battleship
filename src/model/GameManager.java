@@ -5,6 +5,7 @@ import model.board.Board;
 import model.player.ComputerPlayer;
 import model.player.HumanPlayer;
 import model.player.Player;
+import model.ship.*;
 
 public class GameManager {
     private static GameState gameState = GameState.SETUP;
@@ -15,8 +16,12 @@ public class GameManager {
     private static int[] battleshipShips = {3, 0};
     private static int[] carrierShips = {2, 0};
 
+    private static int[] userKills ={0, 0, 0, 0 ,0};
+    private static int[] opponentKills ={0, 0, 0, 0 ,0};
+
     private static Player user, opponent;
     private static Board userBoard, enemyBoard;
+    private static String winner = "DRAW";
 
     public static void setUp() {
         user = new HumanPlayer("Teun");
@@ -102,6 +107,55 @@ public class GameManager {
         return false;
     }
 
+    // Checks for winner, if w == 0 -> No winner, if w == 1 -> User is winner, if w == 2 -> Opponent is winner.
+    public static int checkGameEnd(){
+        int w = 0;
+        if(user.getPoints() == 91) {
+            w = 1;
+            setWinner(user);
+        } else if (opponent.getPoints() == 91) {
+            w = 2;
+            setWinner(opponent);
+        }
+        return w;
+    }
+
+    public static void setOutcome() {
+        if(user.getPoints() > opponent.getPoints()) {
+            setWinner(user);
+        } else if (user.getPoints() < opponent.getPoints()){
+            setWinner(opponent);
+        } else {
+            if(getUserKills()[0] != getOpponentKills()[0]){
+                if(getUserKills()[0] > getOpponentKills()[0]){
+                    setWinner(user);
+                }
+                setWinner(opponent);
+            } else if(getUserKills()[1] != getOpponentKills()[1]){
+                if(getUserKills()[1] > getOpponentKills()[1]){
+                    setWinner(user);
+                }
+                setWinner(opponent);
+            } else if(getUserKills()[2] != getOpponentKills()[2]){
+                if(getUserKills()[2] > getOpponentKills()[2]){
+                    setWinner(user);
+                }
+                setWinner(opponent);
+            } else if(getUserKills()[3] != getOpponentKills()[3]){
+                if(getUserKills()[3] > getOpponentKills()[3]){
+                    setWinner(user);
+                }
+                setWinner(opponent);
+            } else if(getUserKills()[4] != getOpponentKills()[4]) {
+                if (getUserKills()[4] > getOpponentKills()[4]) {
+                    setWinner(user);
+                }
+                setWinner(opponent);
+            }
+        }
+
+    }
+
     public static int[] getPatrolBoatShips() {
         return patrolBoatShips;
     }
@@ -136,5 +190,47 @@ public class GameManager {
 
     public static Player getOpponent() {
         return opponent;
+    }
+
+    public static void setWinner(Player player){
+        winner = player.getName();
+    }
+
+    public static String getWinner(){
+        return winner;
+    }
+
+    // adds a kill to the kill list of the player
+    public static void addKill(Ship ship, Player player){
+        int[] kills = new int[5];
+        if(player == user) {
+            kills = userKills;
+        } else if (player == opponent) {
+            kills = opponentKills;
+        }
+        if(ship instanceof CarrierShip){
+            kills[0]++;
+        } else if(ship instanceof BattleShip){
+            kills[1]++;
+        } else if(ship instanceof DestroyerShip){
+            kills[2]++;
+        } else if(ship instanceof SuperPatrolShip){
+            kills[3]++;
+        } else if(ship instanceof PatrolBoatShip){
+            kills[4]++;
+        }
+        if(player == user) {
+            userKills = kills;
+        } else if (player == opponent) {
+            opponentKills = kills;
+        }
+    }
+
+    public static int[] getUserKills(){
+        return userKills;
+    }
+
+    public static int[] getOpponentKills(){
+        return opponentKills;
     }
 }

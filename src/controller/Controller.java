@@ -222,10 +222,16 @@ public class Controller {
                 selectedTile.getShip().hitShip();
                 usersBoard.getPlayer().addPoint();
                 selectedTile.setIsShot(true);
-                if (selectedTile.getShip().getShipLives() == 0) {
-                    usersBoard.getPlayer().addPoint();
-                }
                 GameView.setMessage("Hit a ship!");
+                if (selectedTile.getShip().getShipLives() == 0) {
+                    GameManager.addKill(selectedTile.getShip(), usersBoard.getPlayer());
+                    usersBoard.getPlayer().addPoint();
+                    GameView.setMessage("Destroyed ship!");
+                    if(GameManager.checkGameEnd() == 1 || GameManager.checkGameEnd() == 2) {
+                        GameView.setMessage(GameManager.getWinner() + " is the winner!");
+                        GameManager.setGameState(GameState.END);
+                    }
+                }
                 opponentsBoard.setShot(selectedTile, true);
                 // PLAYER GETS ANOTHER TURN
                 // RESET 30s TIMER
