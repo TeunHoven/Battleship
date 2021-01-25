@@ -1,3 +1,5 @@
+package Protocol;
+
 import java.util.ArrayList;
 
 public class Protocol {
@@ -6,9 +8,9 @@ public class Protocol {
      */
     public static final int PORT = 5000;
     /**
-     * Dimensions of the board are 10 x 15.
+     * Dimensions of the board are 15 x 10.
      */
-    public static final int[] DIMENSIONS = {10, 15};
+    public static final int[] DIMENSIONS = {15, 10};
     /**
      * The command separator is ";".
      */
