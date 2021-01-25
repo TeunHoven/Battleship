@@ -1,5 +1,3 @@
-package Protocol;
-
 import java.util.ArrayList;
 
 public class Protocol {
@@ -43,6 +41,18 @@ public class Protocol {
         E, // End
         W, // RadioWave
         L, // List of Players
+        G, // Get list of Players
+    }
+
+    /**
+     * Letters that represent the ship class when sending a board.
+     */
+    public enum ShipId {
+        C, // Carrier
+        B, // Battleship
+        D, // Destroyer
+        S, // Super Patrol
+        P  // Patrol Boat
     }
 
     /**
@@ -201,11 +211,12 @@ public class Protocol {
      * join message.
      * used by client.
      * @param name the players name.
-     * @param gameOptions options for the game.
+     * @param radarEnabled does client support radar.
+     * @param lobbyEnabled does client support lobby.
      * @return a protocol message with the name and game options
      */
-    public static String join(String name, String[] gameOptions) {
-        return protocolMessage(new Object[]{MessageIdentifier.J, name, gameOptions});
+    public static String join(String name, Boolean radarEnabled, Boolean lobbyEnabled) {
+        return protocolMessage(new Object[]{MessageIdentifier.J, name, radarEnabled, lobbyEnabled});
     }
 
     /**
@@ -214,7 +225,17 @@ public class Protocol {
      * @return a protocol success message.
      */
     public static String success() {
-        return success(null);
+        return success((String[]) null);
+    }
+
+    /**
+     * Success message with single {@link String} response
+     * used by the server.
+     * @param message the error message.
+     * @return a protocol fail message.
+     */
+    public static String success(String message) {
+        return success(new String[]{message});
     }
 
     /**
@@ -223,7 +244,17 @@ public class Protocol {
      * @return a protocol fail message.
      */
     public static String fail() {
-        return fail(null);
+        return fail((String[]) null);
+    }
+
+    /**
+     * Fail message with single error {@link String}
+     * used by the server.
+     * @param message the error message.
+     * @return a protocol fail message.
+     */
+    public static String fail(String message) {
+        return fail(new String[]{message});
     }
 
     /**
@@ -264,8 +295,8 @@ public class Protocol {
      * sent by server.
      * @return a protocol Begin message.
      */
-    public static String begin() {
-        return MessageIdentifier.B.toString();
+    public static String begin(String[] playerNames, Boolean radar) {
+        return protocolMessage(new Object[]{MessageIdentifier.B, playerNames, radar});
     }
 
     /**
@@ -274,8 +305,8 @@ public class Protocol {
      * @param turn the player which will take the next turn.
      * @return a protocol Turn message.
      */
-    public static String turn(Integer turn) {
-        return protocolMessage(new Object[]{MessageIdentifier.T, turn});
+    public static String turn(Integer turn, Integer[] scores) {
+        return protocolMessage(new Object[]{MessageIdentifier.T, turn, scores});
     }
 
     /**
@@ -312,8 +343,8 @@ public class Protocol {
      * @param value the result, {-1: invalid, 0: miss, 1: hit, 2: sunk}
      * @return a protocol hit message.
      */
-    public static String hit(Integer value) {
-        return protocolMessage(new Object[]{MessageIdentifier.H, value});
+    public static String hit(Integer value, Integer attacker, Integer receiver, Integer[] coordinate) {
+        return protocolMessage(new Object[]{MessageIdentifier.H, value, attacker, receiver, coordinate});
     }
 
     /**
@@ -349,10 +380,18 @@ public class Protocol {
      * radar response.
      * sent by server.
      * @param boardSection board of the opponent.
-     * @return
+     * @return a protocol radar response message
      */
     public static String radarResponse(String[][] boardSection) {
         return protocolMessage(new Object[]{MessageIdentifier.W, boardSection});
+    }
+
+    /**
+     * asks for a list of players connected to the lobby from the server.
+     * sent by the client.
+     */
+    public static String getPlayers() {
+        return MessageIdentifier.G.toString();
     }
 
     /**
