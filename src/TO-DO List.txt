@@ -2,7 +2,7 @@ TO-DO LIST:
 [GAME]:
 - AI implemented (schepen neerzetten af)
 - Benaming schepen op het scherm X
-- Score view laten zien
+- Score view laten zien X
 - Determine winner function + type of victory
 - Chatbox
 - Notify client als zijn schip word geraakt

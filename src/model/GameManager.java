@@ -43,13 +43,15 @@ public class GameManager {
                 if(userBoard.getPlayer().isReady() && enemyBoard.getPlayer().isReady()) {
                     userBoard.setColor(Color.BLUE);
                     setGameState(GameState.USERROUND);
-                    GameView.setRound("Your round");
                 }
+                GameView.setRound("Setup");
                 break;
             case USERROUND:
+                GameView.setRound("Your round");
                 GameView.setMessage("Click a tile!");
                 break;
             case ENEMYROUND:
+                GameView.setRound("Opponents round");
                 break;
             case END:
                 break;

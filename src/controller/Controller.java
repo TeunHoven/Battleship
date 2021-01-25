@@ -246,7 +246,7 @@ public class Controller {
                 // NOTIFY THE PLAYER OF A "MISS EVENT"
                 // END PLAYER TURN
                 selectedTile.setIsShot(true);
-                //GameManager.setGameState(GameState.ENEMYROUND);
+                GameManager.setGameState(GameState.ENEMYROUND);
                 GameView.setMessage("Tile has no ship!");
                 opponentsBoard.setShot(selectedTile, false);
             }
@@ -464,14 +464,30 @@ public class Controller {
     private void updateView() {
         GameManager.checkRound(); // Checks for every round if it's over!
 
-        if(selectedShip != null)
-            GameView.setSelectedShip(selectedShip.toString() + " " + getShipsLeftOver() + "x");
+        switch(GameManager.getGameState()) {
+            case SETUP -> {
+                if (selectedShip != null)
+                    GameView.setSelectedShip(selectedShip.toString() + " " + getShipsLeftOver() + "x");
 
-        if(selectedTiles != null) {
-            for (Tile t : usersBoard.getTiles()) {
-                if(GameManager.getGameState() == GameState.SETUP && Arrays.asList(selectedTiles).contains(t)) {
-                    t.setColor(Color.GRAY);
-                } else {
+                if (selectedTiles != null) {
+                    for (Tile t : usersBoard.getTiles()) {
+                        if (Arrays.asList(selectedTiles).contains(t)) {
+                            t.setColor(Color.GRAY);
+                        } else {
+                            t.setColor(Color.BLUE);
+                        }
+                    }
+                }
+            }
+
+            case USERROUND -> {
+                for (Tile t : usersBoard.getTiles()) {
+                    t.setColor(Color.BLUE);
+                }
+            }
+
+            case ENEMYROUND -> {
+                for (Tile t : opponentsBoard.getTiles()) {
                     t.setColor(Color.BLUE);
                 }
             }
