@@ -217,24 +217,33 @@ public class Controller {
 
     // All mouse events necessary for the USERROUND game state
     private void userRoundMouse(MouseEvent event) {
-        if(selectedTile.hasShip() && !selectedTile.isShot()) {
-            selectedTile.getShip().hitShip();
-            usersBoard.getPlayer().addPoint();
-            selectedTile.setIsShot(true);
-            if(selectedTile.getShip().getShipLives() == 0) {
+        if(!tileOnUsersBoard()) {
+            if (selectedTile.hasShip() && !selectedTile.isShot()) {
+                selectedTile.getShip().hitShip();
                 usersBoard.getPlayer().addPoint();
+                selectedTile.setIsShot(true);
+                if (selectedTile.getShip().getShipLives() == 0) {
+                    usersBoard.getPlayer().addPoint();
+                }
+                GameView.setMessage("Hit a ship!");
+                opponentsBoard.setShot(selectedTile, true);
+                // PLAYER GETS ANOTHER TURN
+                // RESET 30s TIMER
+            } else if (selectedTile.isShot()) {
+                // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
+                // PLAYER GETS ANOTHER TURN
+                GameView.setMessage("Tile already shot!");
+            } else if (!selectedTile.hasShip()) {
+                // NOTIFY THE PLAYER OF A "MISS EVENT"
+                // END PLAYER TURN
+                selectedTile.setIsShot(true);
+                //GameManager.setGameState(GameState.ENEMYROUND);
+                GameView.setMessage("Tile has no ship!");
+                opponentsBoard.setShot(selectedTile, false);
             }
-            // PLAYER GETS ANOTHER TURN
-            // RESET 30s TIMER
-        } else if (selectedTile.isShot()) {
-            // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
-            // PLAYER GETS ANOTHER TURN
-        } else if (!selectedTile.hasShip()) {
-            // NOTIFY THE PLAYER OF A "MISS EVENT"
-            // END PLAYER TURN
-            selectedTile.setIsShot(true);
-            GameManager.setGameState(GameState.ENEMYROUND);
         }
+
+        updateView();
     }
 
     // All mouse events necessary for the ENEMYROUND game state
@@ -331,7 +340,7 @@ public class Controller {
 
     // All hover events necessary for the SETUP game state
     private void setUpHover() {
-        if(selectedTile.getBoard() == usersBoard) {
+        if(tileOnUsersBoard()) {
             if (selectedShip != null) {
                 selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
                 boolean validPlacement = isValidPlacement();
@@ -351,13 +360,16 @@ public class Controller {
 
     // All hover events necessary for the USERROUND game state
     private void userRoundHover() {
-        for (Tile t: opponentsBoard.getTiles()) {
-            if(t == selectedTile) {
-                t.setColor(Color.RED);
-            } else {
-                t.setColor(Color.BLUE);
+        if(!tileOnUsersBoard()) {
+            for (Tile t : opponentsBoard.getTiles()) {
+                if (t == selectedTile) {
+                    t.setColor(Color.RED);
+                } else {
+                    t.setColor(Color.BLUE);
+                }
             }
         }
+        updateView();
     }
 
     // All hover events necessary for the ENEMYROUND game state
@@ -410,7 +422,12 @@ public class Controller {
         return shipsLeftOver;
     }
 
+    /**
+     * Updates the scene automatic
+     */
     private void updateView() {
+        GameManager.checkRound(); // Checks for every round if it's over!
+
         if(selectedShip != null)
             GameView.setSelectedShip(selectedShip.toString() + " " + getShipsLeftOver() + "x");
 
@@ -426,5 +443,16 @@ public class Controller {
 
         GameView.setUserPoints(GameManager.getUser().getPoints());
         GameView.setEnemyPoints(GameManager.getOpponent().getPoints());
+    }
+
+    /**
+     * Checks if the selected tile is on the users board
+     * @return true if selected tile is on the users board
+     */
+    private boolean tileOnUsersBoard() {
+        if(selectedTile.getBoard() == usersBoard)
+            return true;
+        else
+            return false;
     }
 }

@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import model.GameManager;
 import model.board.Board;
@@ -17,7 +18,7 @@ import model.player.Player;
 public class GameView {
     private static Scene scene;
     private static BorderPane root;
-    private static Label userLabel, enemyLabel, header, currShip, userPoints, enemyPoints;
+    private static Label userLabel, enemyLabel, header, currShip, userPoints, enemyPoints, messageLabel;
     private Font myFont;
     private Controller controller;
 
@@ -41,13 +42,18 @@ public class GameView {
         enemyLabel = new Label(GameManager.getOpponent().getName() + "'s Fleet");
         enemyLabel.setFont(myFont);
 
-        userPoints = new Label("Points: 0");
+        userPoints = new Label("Points: " + GameManager.getUser().getPoints());
         userPoints.setFont(new Font(20));
-        enemyPoints = new Label("Points: 0");
+        enemyPoints = new Label("Points: " + GameManager.getOpponent().getPoints());
         enemyPoints.setFont(new Font(20));
 
         header = new Label("Battleship");
         header.setFont(new Font(50));
+
+        messageLabel = new Label("");
+        messageLabel.setFont(new Font(20));
+        messageLabel.setTextFill(Color.RED);
+
         currShip = new Label("Ship: none");
         currShip.setFont(new Font(20));
 
@@ -63,7 +69,7 @@ public class GameView {
 
         HBox ship = new HBox(0, currShip);
         ship.setAlignment(Pos.TOP_LEFT);
-        HBox headerBox = new HBox(0, header);
+        VBox headerBox = new VBox(0, header, messageLabel);
         headerBox.setAlignment(Pos.CENTER);
 
         VBox topBox = new VBox(10, headerBox, ship);
@@ -90,5 +96,9 @@ public class GameView {
 
     public static void setEnemyPoints(int points) {
         enemyPoints.setText("Points: " + points);
+    }
+
+    public static void setMessage(String message) {
+        messageLabel.setText(message);
     }
 }

@@ -7,7 +7,7 @@ import model.player.HumanPlayer;
 import model.player.Player;
 
 public class GameManager {
-    private static GameState gameState = GameState.SETUP;
+    private static GameState gameState = GameState.USERROUND;
 
     private static int[] patrolBoatShips = {10, 0};
     private static int[] superPatrolShips = {8, 0};
@@ -27,6 +27,25 @@ public class GameManager {
 
         if(opponent instanceof ComputerPlayer) {
             ((ComputerPlayer) opponent).setUp();
+        }
+    }
+
+    public static void checkRound() {
+        switch(gameState) {
+            case SETUP:
+                if((patrolBoatShips[0] == patrolBoatShips[1]+1) && (superPatrolShips[0] == superPatrolShips[1]+1)
+                        && (destroyerShips[0] == destroyerShips[1]+1) && (battleshipShips[0] == battleshipShips[1]+1) && (carrierShips[0] == carrierShips[1]+1)) {
+                    gameState = GameState.USERROUND;
+                }
+                break;
+            case USERROUND:
+                break;
+            case ENEMYROUND:
+                break;
+            case END:
+                break;
+            default:
+                break;
         }
     }
 

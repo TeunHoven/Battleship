@@ -138,7 +138,10 @@ public class Board extends Parent {
 
     public void setShip(Tile tile, Ship ship) {
         double width = (30*ship.getShipLength())-10;
-        double labelCentre = (width/2)-(2.5*ship.getName().toCharArray().length);
+        double labelCentre = (width/2)-(3*ship.getName().toCharArray().length);
+
+        int x = 5+(tile.getXPos()+1)*(Tile.SIZE+1);
+        int y = 5+(tile.getYPos()+1)*(Tile.SIZE+1);
 
         Label label = new Label(ship.getName());
         Rectangle rect = new Rectangle(20, 20);
@@ -149,8 +152,8 @@ public class Board extends Parent {
 
         if(!ship.isHorizontal()) { // Vertical
             // Ship rectangle
-            rect.setX(5+(tile.getXPos()+1)*(Tile.SIZE+1.3));
-            rect.setY(5+(tile.getYPos()+1)*(Tile.SIZE+1.3));
+            rect.setX(x);
+            rect.setY(y);
             rect.setHeight(width);
 
             Rotate rotation = new Rotate();
@@ -161,19 +164,67 @@ public class Board extends Parent {
             label.getTransforms().add(rotation);
             rotation.setAngle(90);
 
-            label.setTranslateX(25+(tile.getXPos()+1)*(Tile.SIZE+1.3));
+            label.setTranslateX(25+(tile.getXPos()+1)*(Tile.SIZE+1));
             label.setTranslateY(rect.getY()+labelCentre);
         } else { // Horizontal
             // Ship rectangle
-            rect.setX(5+(tile.getXPos()+1)*(Tile.SIZE+1.3));
-            rect.setY(5+(tile.getYPos()+1)*(Tile.SIZE+1.3));
+            rect.setX(x);
+            rect.setY(y);
             rect.setWidth(width);
 
             label.setTranslateX(rect.getX()+labelCentre);
-            label.setTranslateY(5+(tile.getYPos()+1)*(Tile.SIZE+1.3));
+            label.setTranslateY(5+(tile.getYPos()+1)*(Tile.SIZE+1));
         }
 
         getChildren().add(rect);
         getChildren().add(label);
+    }
+
+    public void setShot(Tile tile, boolean hit) {
+        Tile right = getTile(tile.getXPos()+1, tile.getYPos());
+        Tile down = getTile(tile.getXPos(), tile.getYPos()+1);
+        Tile left = getTile(tile.getXPos()-1, tile.getYPos());
+        Tile up = getTile(tile.getXPos(), tile.getYPos()-1);
+
+        int x = (tile.getXPos()+1)*(Tile.SIZE+1);
+        int y = (tile.getYPos()+1)*(Tile.SIZE+1);
+
+        Rectangle rect = new Rectangle(20, 20);
+        rect.setFill(Color.RED);
+
+        if(hit) {
+            rect.setTranslateX(x+5);
+            rect.setTranslateY(y+5);
+
+            if(right != null && right.hasShip() && right.isShot() && right.getShip().toString().equals(tile.getShip().toString())) {
+                rect.setWidth(Tile.SIZE-5);
+                rect.setTranslateX(x+5);
+                rect.setTranslateY(y+5);
+            }
+
+            if(down != null && down.hasShip() && down.isShot() && down.getShip().toString().equals(tile.getShip().toString())) {
+                rect.setHeight(Tile.SIZE-5);
+                rect.setTranslateX(x+5);
+                rect.setTranslateY(y+5);
+            }
+
+            if(left != null && left.hasShip() && left.isShot() && left.getShip().toString().equals(tile.getShip().toString())) {
+                rect.setWidth(Tile.SIZE-5);
+                rect.setTranslateX(x);
+                rect.setTranslateY(y+5);
+            }
+
+            if(up != null && up.hasShip() && up.isShot() && up.getShip().toString().equals(tile.getShip().toString())) {
+                rect.setHeight(Tile.SIZE-5);
+                rect.setTranslateX(x+5);
+                rect.setTranslateY(y);
+            }
+        } else {
+            rect.setFill(Color.GRAY);
+            rect.setTranslateX(x+5);
+            rect.setTranslateY(y+5);
+        }
+
+        getChildren().add(rect);
     }
 }
