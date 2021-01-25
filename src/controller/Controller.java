@@ -92,10 +92,10 @@ public class Controller {
     private void placeShip(Tile tile) {
         if(selectedShip != null) {
             selectedTiles = usersBoard.getTileNeighboursHorizontal(tile, selectedShip.getShipLength());
-            boolean validPlacement = !Arrays.asList(selectedTiles).contains(null);
+            boolean validPlacement = true;
 
             for(Tile t: selectedTiles) {
-                if(t.hasShip()) {
+                if(t == null || t.hasShip()) {
                     validPlacement = false;
                 }
             }
@@ -157,7 +157,7 @@ public class Controller {
                     if (GameManager.canAddCarrierShips()) {
                         Ship ship = new CarrierShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                         for (Tile t : selectedTiles) {
-                            if (!t.hasShip()) {
+                            if (t != null && !t.hasShip()) {
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);

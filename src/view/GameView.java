@@ -18,7 +18,7 @@ import model.player.Player;
 public class GameView {
     private static Scene scene;
     private static BorderPane root;
-    private static Label userLabel, enemyLabel, header, currShip, userPoints, enemyPoints, messageLabel;
+    private static Label userLabel, enemyLabel, header, currShip, userPoints, enemyPoints, messageLabel, roundLabel;
     private Font myFont;
     private Controller controller;
 
@@ -54,6 +54,9 @@ public class GameView {
         messageLabel.setFont(new Font(20));
         messageLabel.setTextFill(Color.RED);
 
+        roundLabel = new Label("Setup");
+        roundLabel.setFont(new Font(15));
+
         currShip = new Label("Ship: none");
         currShip.setFont(new Font(20));
 
@@ -69,7 +72,7 @@ public class GameView {
 
         HBox ship = new HBox(0, currShip);
         ship.setAlignment(Pos.TOP_LEFT);
-        VBox headerBox = new VBox(0, header, messageLabel);
+        VBox headerBox = new VBox(0, header, messageLabel, roundLabel);
         headerBox.setAlignment(Pos.CENTER);
 
         VBox topBox = new VBox(10, headerBox, ship);
@@ -100,5 +103,9 @@ public class GameView {
 
     public static void setMessage(String message) {
         messageLabel.setText(message);
+    }
+
+    public static void setRound(String round) {
+        roundLabel.setText(round);
     }
 }

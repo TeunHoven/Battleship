@@ -1,10 +1,12 @@
 package model;
 
 import controller.GameState;
+import javafx.scene.paint.Color;
 import model.board.Board;
 import model.player.ComputerPlayer;
 import model.player.HumanPlayer;
 import model.player.Player;
+import view.GameView;
 
 public class GameManager {
     private static GameState gameState = GameState.SETUP;
@@ -33,9 +35,11 @@ public class GameManager {
     public static void checkRound() {
         switch(gameState) {
             case SETUP:
-                if((patrolBoatShips[0] == patrolBoatShips[1]+1) && (superPatrolShips[0] == superPatrolShips[1]+1)
-                        && (destroyerShips[0] == destroyerShips[1]+1) && (battleshipShips[0] == battleshipShips[1]+1) && (carrierShips[0] == carrierShips[1]+1)) {
-                    gameState = GameState.USERROUND;
+                if((patrolBoatShips[0] == patrolBoatShips[1]) && (superPatrolShips[0] == superPatrolShips[1])
+                        && (destroyerShips[0] == destroyerShips[1]) && (battleshipShips[0] == battleshipShips[1]) && (carrierShips[0] == carrierShips[1])) {
+                    userBoard.setColor(Color.BLUE);
+                    setGameState(GameState.USERROUND);
+                    GameView.setRound("Your round");
                 }
                 break;
             case USERROUND:

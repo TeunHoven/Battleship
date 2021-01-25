@@ -93,7 +93,7 @@ public class Board extends Parent {
 
     // Gets tile from x, y coordinates on the board
     public Tile getTile(int x, int y) {
-        int index = ((y)*15)+(x);
+        int index = ((y)*width)+(x);
 
         if(index < 0 || index > 149)
             return null;
@@ -181,50 +181,25 @@ public class Board extends Parent {
     }
 
     public void setShot(Tile tile, boolean hit) {
-        Tile right = getTile(tile.getXPos()+1, tile.getYPos());
-        Tile down = getTile(tile.getXPos(), tile.getYPos()+1);
-        Tile left = getTile(tile.getXPos()-1, tile.getYPos());
-        Tile up = getTile(tile.getXPos(), tile.getYPos()-1);
-
         int x = (tile.getXPos()+1)*(Tile.SIZE+1);
         int y = (tile.getYPos()+1)*(Tile.SIZE+1);
 
         Rectangle rect = new Rectangle(20, 20);
-        rect.setFill(Color.RED);
+        rect.setFill(Color.GRAY);
+
+        rect.setTranslateX(x+5);
+        rect.setTranslateY(y+5);
 
         if(hit) {
-            rect.setTranslateX(x+5);
-            rect.setTranslateY(y+5);
-
-            if(right != null && right.hasShip() && right.isShot() && right.getShip().toString().equals(tile.getShip().toString())) {
-                rect.setWidth(Tile.SIZE-5);
-                rect.setTranslateX(x+5);
-                rect.setTranslateY(y+5);
-            }
-
-            if(down != null && down.hasShip() && down.isShot() && down.getShip().toString().equals(tile.getShip().toString())) {
-                rect.setHeight(Tile.SIZE-5);
-                rect.setTranslateX(x+5);
-                rect.setTranslateY(y+5);
-            }
-
-            if(left != null && left.hasShip() && left.isShot() && left.getShip().toString().equals(tile.getShip().toString())) {
-                rect.setWidth(Tile.SIZE-5);
-                rect.setTranslateX(x);
-                rect.setTranslateY(y+5);
-            }
-
-            if(up != null && up.hasShip() && up.isShot() && up.getShip().toString().equals(tile.getShip().toString())) {
-                rect.setHeight(Tile.SIZE-5);
-                rect.setTranslateX(x+5);
-                rect.setTranslateY(y);
-            }
-        } else {
-            rect.setFill(Color.GRAY);
-            rect.setTranslateX(x+5);
-            rect.setTranslateY(y+5);
+            rect.setFill(Color.RED);
         }
 
         getChildren().add(rect);
+    }
+
+    public void setColor(Color c) {
+        for(Tile t: tiles) {
+            t.setFill(c);
+        }
     }
 }
