@@ -25,6 +25,9 @@ public class Controller {
     private static Tile selectedTile;
     private static Tile[] selectedTiles;
 
+    private boolean radarUsed = false;
+    private static final int[][] surroundedLocations = {{1,0}, {1,1}, {0,1}, {-1,1}, {-1,0}, {-1,-1}, {0, -1}, {1, -1}};
+
     private Controller() {
 
     }
@@ -190,12 +193,7 @@ public class Controller {
                 break;
 
             case ENEMYROUND:
-                enemyRoundHover();
-                try {
-                    computerPlayerTurn();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                computerPlayerTurn();
                 break;
 
             case END:
@@ -216,6 +214,10 @@ public class Controller {
         // Left click on the mouse
         if (event.getButton() == MouseButton.PRIMARY) {
             placeShip(selectedTile);
+
+            if(isPlayerReady()) {
+                GameView.readyButton.setDisable(false);
+            }
         }
 
         // Right click on the mouse
@@ -227,34 +229,48 @@ public class Controller {
     // All mouse events necessary for the USERROUND game state
     private void userRoundMouse(MouseEvent event) {
         if(!tileOnUsersBoard()) {
-            if (selectedTile.hasShip() && !selectedTile.isShot()) {
-                selectedTile.getShip().hitShip();
-                usersBoard.getPlayer().addPoint();
-                selectedTile.setIsShot(true);
-                GameView.setMessage("Hit a ship!");
-                if (selectedTile.getShip().getShipLives() == 0) {
-                    GameManager.addKill(selectedTile.getShip(), usersBoard.getPlayer());
+            if(!GameManager.getRadarUserReady() || !radarUsed) {
+                if (selectedTile.hasShip() && !selectedTile.isShot()) {
+                    selectedTile.getShip().hitShip();
                     usersBoard.getPlayer().addPoint();
-                    GameView.setMessage("Destroyed ship!");
-                    if(GameManager.checkGameEnd() == 1 || GameManager.checkGameEnd() == 2) {
-                        GameView.setMessage(GameManager.getWinner() + " is the winner!");
-                        GameManager.setGameState(GameState.END);
+                    selectedTile.setIsShot(true);
+                    GameView.setMessage("Hit a ship!");
+                    if (selectedTile.getShip().getShipLives() == 0) {
+                        GameManager.addKill(selectedTile.getShip(), usersBoard.getPlayer());
+                        usersBoard.getPlayer().addPoint();
+                        GameView.setMessage("Destroyed ship!");
+                        if (GameManager.checkGameEnd() == 1 || GameManager.checkGameEnd() == 2) {
+                            GameView.setMessage(GameManager.getWinner() + " is the winner!");
+                            GameManager.setGameState(GameState.END);
+                        }
                     }
+                    opponentsBoard.setShot(selectedTile, true);
+                    // PLAYER GETS ANOTHER TURN
+                    // RESET 30s TIMER
+                } else if (selectedTile.isShot()) {
+                    // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
+                    // PLAYER GETS ANOTHER TURN
+                    GameView.setMessage("Tile already shot!");
+                } else if (!selectedTile.hasShip()) {
+                    // NOTIFY THE PLAYER OF A "MISS EVENT"
+                    // END PLAYER TURN
+                    selectedTile.setIsShot(true);
+                    GameManager.nextTurn();
+                    GameView.setMessage("Tile has no ship!");
+                    opponentsBoard.setShot(selectedTile, false);
                 }
-                opponentsBoard.setShot(selectedTile, true);
-                // PLAYER GETS ANOTHER TURN
-                // RESET 30s TIMER
-            } else if (selectedTile.isShot()) {
-                // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
-                // PLAYER GETS ANOTHER TURN
-                GameView.setMessage("Tile already shot!");
-            } else if (!selectedTile.hasShip()) {
-                // NOTIFY THE PLAYER OF A "MISS EVENT"
-                // END PLAYER TURN
-                selectedTile.setIsShot(true);
-                GameManager.setGameState(GameState.ENEMYROUND);
-                GameView.setMessage("Tile has no ship!");
-                opponentsBoard.setShot(selectedTile, false);
+            } else {
+                Tile[] surroundedTiles = new Tile[8];
+                for(int i=0; i<8; i++) { // To get all the surrounded tiles
+                    int x = selectedTile.getXPos()+surroundedLocations[i][0];
+                    int y = selectedTile.getYPos()+surroundedLocations[i][1];
+
+                    surroundedTiles[i] = opponentsBoard.getTile(x, y);
+                }
+                opponentsBoard.setRadar(surroundedTiles);
+                radarUsed = false;
+                updateView();
+                GameManager.radarUserUsed();
             }
         }
 
@@ -377,11 +393,21 @@ public class Controller {
     // All hover events necessary for the USERROUND game state
     private void userRoundHover() {
         if(!tileOnUsersBoard()) {
-            for (Tile t : opponentsBoard.getTiles()) {
-                if (t == selectedTile) {
-                    t.setColor(Color.RED);
-                } else {
-                    t.setColor(Color.BLUE);
+            if(!GameManager.getRadarUserReady() || !radarUsed) {
+                for (Tile t : opponentsBoard.getTiles()) {
+                    if (t == selectedTile) {
+                        t.setColor(Color.RED);
+                    } else {
+                        t.setColor(Color.BLUE);
+                    }
+                }
+            } else {
+                for (Tile t : opponentsBoard.getTiles()) {
+                    if (t == selectedTile) {
+                        t.setColor(Color.GREEN);
+                    } else {
+                        t.setColor(Color.BLUE);
+                    }
                 }
             }
         }
@@ -499,6 +525,9 @@ public class Controller {
             }
         }
 
+        if(usersBoard.getPlayer().isReady()) {
+            GameView.setTopBox();
+        }
         GameView.setUserPoints(GameManager.getUser().getPoints());
         GameView.setEnemyPoints(GameManager.getOpponent().getPoints());
     }
@@ -517,6 +546,7 @@ public class Controller {
     public void readyButtonClicked() {
         usersBoard.getPlayer().setReady();
         GameView.setTopBox();
+        GameManager.checkRound();
         updateView();
     }
 
@@ -549,6 +579,7 @@ public class Controller {
             randomizePlacement();
         }
 
+        GameView.readyButton.setDisable(false);
         updateView();
     }
 
@@ -578,9 +609,8 @@ public class Controller {
         }
     }
 
-    public static void computerPlayerTurn() throws InterruptedException {
+    public static void computerPlayerTurn() {
         while(true) {
-            Thread.sleep(2000);
             int[] posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
             Tile tile = usersBoard.getTile(posTile[0], posTile[1]);
             while (tile.isShot()) {
@@ -606,6 +636,27 @@ public class Controller {
                 }
             }
         }
-        GameManager.setGameState(GameState.USERROUND);
+        GameManager.nextTurn();
+    }
+
+    public void radarButtonClicked() {
+        radarUsed = !radarUsed;
+        if(radarUsed) {
+            GameView.setMessage("Click on tile to use radar!");
+        } else {
+            GameManager.checkRound();
+        }
+    }
+
+    private boolean isPlayerReady() {
+        if(GameManager.getPatrolBoatShips()[0] == GameManager.getPatrolBoatShips()[1]
+                && GameManager.getSuperPatrolShips()[0] == GameManager.getSuperPatrolShips()[1]
+                && GameManager.getDestroyerShips()[0] == GameManager.getDestroyerShips()[1]
+                && GameManager.getBattleshipShips()[0] == GameManager.getBattleshipShips()[1]
+                && GameManager.getCarrierShips()[0] == GameManager.getCarrierShips()[1]) {
+            return true;
+        }
+
+        return false;
     }
 }

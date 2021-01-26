@@ -20,10 +20,10 @@ public class GameView {
     private static Scene scene;
     private static BorderPane root;
     private static Label userLabel, enemyLabel, header, currShip, userPoints, enemyPoints, messageLabel, roundLabel;
-    private static Button randomizeButton, readyButton;
+    public static Button randomizeButton, readyButton;
     private static VBox topBox;
     private Font myFont;
-    private Controller controller;
+    private static Controller controller;
 
     public GameView() {
         GameManager.setUp();
@@ -86,6 +86,7 @@ public class GameView {
         readyButton = new Button("Ready");
         readyButton.setFont(new Font(12));
         readyButton.setOnAction(e -> controller.readyButtonClicked());
+        readyButton.setDisable(true);
 
         VBox userInfo = new VBox(0, currShip, randomizeButton, readyButton);
         userInfo.setAlignment(Pos.TOP_LEFT);
@@ -125,8 +126,17 @@ public class GameView {
     }
 
     public static void setTopBox() {
-        VBox headerBox = new VBox(0, header, messageLabel, roundLabel);
+        Button radar = new Button("Radar");
+        radar.setOnAction(e -> controller.radarButtonClicked());
+        radar.setAlignment(Pos.CENTER);
+        radar.setDisable(true);
+
+        if(GameManager.getRadarUserReady())
+            radar.setDisable(false);
+
+        VBox headerBox = new VBox(0, header, messageLabel, roundLabel, radar);
         headerBox.setAlignment(Pos.CENTER);
+
         topBox = new VBox(10, headerBox);
         root.setTop(topBox);
     }

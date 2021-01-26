@@ -179,6 +179,8 @@ public class Board extends Parent {
         int x = (tile.getXPos()+1)*(Tile.SIZE+1);
         int y = (tile.getYPos()+1)*(Tile.SIZE+1);
 
+        tile.setIsShot(true);
+
         Rectangle rect = new Rectangle(20, 20);
         rect.setFill(Color.GRAY);
 
@@ -190,6 +192,26 @@ public class Board extends Parent {
         }
 
         getChildren().add(rect);
+    }
+
+    public void setRadar(Tile[] tiles) {
+        for(Tile t: tiles) {
+            if(t != null && t.hasShip()) {
+                int x = (t.getXPos()+1)*(Tile.SIZE+1);
+                int y = (t.getYPos()+1)*(Tile.SIZE+1);
+
+                Rectangle rect = new Rectangle(10, 10);
+                rect.setFill(Color.GREEN);
+
+                rect.setTranslateX(x+10);
+                rect.setTranslateY(y+10);
+
+                rect.addEventFilter(MouseEvent.MOUSE_CLICKED, Controller.sharedInstance.mouseEvent);
+                rect.hoverProperty().addListener((observable, oldValue, newValue) -> Controller.sharedInstance.onHover(t));
+
+                getChildren().add(rect);
+            }
+        }
     }
 
     public void setColor(Color c) {

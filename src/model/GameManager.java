@@ -1,5 +1,6 @@
 package model;
 
+import controller.Controller;
 import controller.GameState;
 import javafx.scene.paint.Color;
 import model.board.Board;
@@ -11,6 +12,11 @@ import view.GameView;
 
 public class GameManager {
     private static GameState gameState = GameState.SETUP;
+
+    private static int round = 0;
+    private static int turn = 0;
+    private static boolean radarReadyUser = false;
+    private static boolean radarReadyOpponent = false;
 
     private static int[] patrolBoatShips = {10, 0};
     private static int[] superPatrolShips = {8, 0};
@@ -43,20 +49,47 @@ public class GameManager {
                 if(userBoard.getPlayer().isReady() && enemyBoard.getPlayer().isReady()) {
                     userBoard.setColor(Color.BLUE);
                     setGameState(GameState.USERROUND);
+                    round++;
                 }
                 GameView.setRound("Setup");
                 break;
             case USERROUND:
-                GameView.setRound("Your round");
+                GameView.setRound("Your turn #" + round + "");
                 GameView.setMessage("Click a tile!");
                 break;
             case ENEMYROUND:
-                GameView.setRound("Opponents round");
+                GameView.setRound("Opponents turn #" + round + "");
                 break;
             case END:
                 break;
             default:
                 break;
+        }
+    }
+
+    public static void nextTurn() {
+        turn++;
+        if(gameState == GameState.USERROUND) {
+            gameState = GameState.ENEMYROUND;
+        }else if(gameState == GameState.ENEMYROUND) {
+            gameState = GameState.USERROUND;
+        }
+
+        if(turn%2 == 0) {
+            nextRound();
+            turn = 0;
+        }
+        GameView.setTopBox();
+    }
+
+    public static void nextRound() {
+        round++;
+        checkRound();
+        GameView.setTopBox();
+
+        if(round%4 == 0) {
+            radarReadyUser = true;
+            radarReadyOpponent = true;
         }
     }
 
@@ -239,5 +272,17 @@ public class GameManager {
 
     public static int[] getOpponentKills(){
         return opponentKills;
+    }
+
+    public static void radarUserUsed() {
+        radarReadyUser = false;
+    }
+
+    public static boolean getRadarUserReady() {
+        return radarReadyUser;
+    }
+
+    public static boolean getRadarOpponentReady() {
+        return radarReadyOpponent;
     }
 }
