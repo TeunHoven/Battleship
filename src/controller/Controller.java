@@ -42,7 +42,7 @@ public class Controller {
 
         @Override
         public void handle(KeyEvent keyEvent) {
-            switch(GameManager.getGameState()) {
+            switch (GameManager.getGameState()) {
                 case SETUP:
                     setUpKeys(keyEvent);
                     break;
@@ -69,7 +69,7 @@ public class Controller {
     public EventHandler<MouseEvent> mouseEvent = new EventHandler<>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
-            switch(GameManager.getGameState()) {
+            switch (GameManager.getGameState()) {
                 case SETUP:
                     setUpMouse(mouseEvent);
                     break;
@@ -94,12 +94,12 @@ public class Controller {
     };
 
     private void placeShip(Tile tile) {
-        if(selectedShip != null) {
+        if (selectedShip != null) {
             selectedTiles = usersBoard.getTileNeighboursHorizontal(tile, selectedShip.getShipLength());
             boolean validPlacement = true;
 
-            for(Tile t: selectedTiles) {
-                if(t == null || t.hasShip()) {
+            for (Tile t : selectedTiles) {
+                if (t == null || t.hasShip()) {
                     validPlacement = false;
                 }
             }
@@ -109,7 +109,7 @@ public class Controller {
                     if (GameManager.canAddPatrolBoat()) {
                         Ship ship = new PatrolBoatShip(tile.getXPos(), tile.getYPos(), true);
                         for (Tile t : selectedTiles) {
-                            if(!t.hasShip()) {
+                            if (!t.hasShip()) {
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -122,7 +122,7 @@ public class Controller {
                     if (GameManager.canAddSuperPatrol()) {
                         for (Tile t : selectedTiles) {
                             Ship ship = new SuperPatrolShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
-                            if(!t.hasShip()) {
+                            if (!t.hasShip()) {
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -135,7 +135,7 @@ public class Controller {
                     if (GameManager.canAddDestroyerShips()) {
                         for (Tile t : selectedTiles) {
                             Ship ship = new DestroyerShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
-                            if(!t.hasShip()) {
+                            if (!t.hasShip()) {
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -148,7 +148,7 @@ public class Controller {
                     if (GameManager.canAddBattleshipShips()) {
                         Ship ship = new BattleShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                         for (Tile t : selectedTiles) {
-                            if(!t.hasShip()) {
+                            if (!t.hasShip()) {
                                 t.setShip(ship);
                                 t.setHasShip(true);
                                 usersBoard.setShip(selectedTile, ship);
@@ -183,7 +183,7 @@ public class Controller {
     public void onHover(Tile tile) {
         selectedTile = tile;
 
-        switch(GameManager.getGameState()) {
+        switch (GameManager.getGameState()) {
             case SETUP:
                 setUpHover();
                 break;
@@ -193,7 +193,7 @@ public class Controller {
                 break;
 
             case ENEMYROUND:
-                computerPlayerTurn();
+                computerSmartTurn();
                 break;
 
             case END:
@@ -231,20 +231,7 @@ public class Controller {
         if(!tileOnUsersBoard()) {
             if(!GameManager.getRadarUserReady() || !radarUsed) {
                 if (selectedTile.hasShip() && !selectedTile.isShot()) {
-                    selectedTile.getShip().hitShip();
-                    usersBoard.getPlayer().addPoint();
-                    selectedTile.setIsShot(true);
-                    GameView.setMessage("Hit a ship!");
-                    if (selectedTile.getShip().getShipLives() == 0) {
-                        GameManager.addKill(selectedTile.getShip(), usersBoard.getPlayer());
-                        usersBoard.getPlayer().addPoint();
-                        GameView.setMessage("Destroyed ship!");
-                        if (GameManager.checkGameEnd() == 1 || GameManager.checkGameEnd() == 2) {
-                            GameView.setMessage(GameManager.getWinner() + " is the winner!");
-                            GameManager.setGameState(GameState.END);
-                        }
-                    }
-                    opponentsBoard.setShot(selectedTile, true);
+                    shootTile(selectedTile, usersBoard);
                     // PLAYER GETS ANOTHER TURN
                     // RESET 30s TIMER
                 } else if (selectedTile.isShot()) {
@@ -279,7 +266,7 @@ public class Controller {
 
     // All mouse events necessary for the ENEMYROUND game state
     private void enemyRoundMouse(MouseEvent event) {
-        
+
     }
 
     // All mouse events necessary for the END game state
@@ -295,13 +282,13 @@ public class Controller {
     private void setUpKeys(KeyEvent event) {
         int shipsLeftover = 0;
 
-        if(event.getCode() == KeyCode.E) {
+        if (event.getCode() == KeyCode.E) {
             usersBoard.setHorizontal(!usersBoard.isHorizontal());
         }
 
         // When key 1 is pressed, set ship to Patrol Boat
-        if(event.getCode() == KeyCode.DIGIT1) {
-            if(selectedTile == null) {
+        if (event.getCode() == KeyCode.DIGIT1) {
+            if (selectedTile == null) {
                 selectedShip = new PatrolBoatShip(0, 0, usersBoard.isHorizontal());
             } else {
                 selectedShip = new PatrolBoatShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
@@ -309,8 +296,8 @@ public class Controller {
         }
 
         // When key 2 is pressed, set ship to Super Patrol
-        if(event.getCode() == KeyCode.DIGIT2) {
-            if(selectedTile == null) {
+        if (event.getCode() == KeyCode.DIGIT2) {
+            if (selectedTile == null) {
                 selectedShip = new SuperPatrolShip(0, 0, usersBoard.isHorizontal());
             } else {
                 selectedShip = new SuperPatrolShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
@@ -318,8 +305,8 @@ public class Controller {
         }
 
         // When key 3 is pressed, set ship to Destroyer
-        if(event.getCode() == KeyCode.DIGIT3) {
-            if(selectedTile == null) {
+        if (event.getCode() == KeyCode.DIGIT3) {
+            if (selectedTile == null) {
                 selectedShip = new DestroyerShip(0, 0, usersBoard.isHorizontal());
             } else {
                 selectedShip = new DestroyerShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
@@ -327,8 +314,8 @@ public class Controller {
         }
 
         // When key 4 is pressed, set ship to Battleship
-        if(event.getCode() == KeyCode.DIGIT4) {
-            if(selectedTile == null) {
+        if (event.getCode() == KeyCode.DIGIT4) {
+            if (selectedTile == null) {
                 selectedShip = new BattleShip(0, 0, usersBoard.isHorizontal());
             } else {
                 selectedShip = new BattleShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
@@ -336,15 +323,15 @@ public class Controller {
         }
 
         // When key 5 is pressed, set ship to Carrier
-        if(event.getCode() == KeyCode.DIGIT5) {
-            if(selectedTile == null) {
+        if (event.getCode() == KeyCode.DIGIT5) {
+            if (selectedTile == null) {
                 selectedShip = new CarrierShip(0, 0, usersBoard.isHorizontal());
             } else {
                 selectedShip = new CarrierShip(selectedTile.getXPos(), selectedTile.getYPos(), usersBoard.isHorizontal());
             }
         }
 
-        if(selectedTile != null) {
+        if (selectedTile != null) {
             selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
         }
         updateView();
@@ -371,7 +358,7 @@ public class Controller {
 
     // All hover events necessary for the SETUP game state
     private void setUpHover() {
-        if(tileOnUsersBoard()) {
+        if (tileOnUsersBoard()) {
             if (selectedShip != null) {
                 boolean validPlacement = isValidPlacement();
 
@@ -426,19 +413,19 @@ public class Controller {
 
     private boolean isValidPlacement() {
         selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
-        if(Arrays.asList(selectedTiles).contains(null)) {
+        if (Arrays.asList(selectedTiles).contains(null)) {
             return false;
         }
-        if(usersBoard.isHorizontal()) {
-            for(Tile t: selectedTiles) {
-                if(t.getYPos() != selectedTile.getYPos()) {
+        if (usersBoard.isHorizontal()) {
+            for (Tile t : selectedTiles) {
+                if (t.getYPos() != selectedTile.getYPos()) {
                     return false;
                 }
             }
         }
 
-        for(Tile t: selectedTiles) {
-            if(t.hasShip()) {
+        for (Tile t : selectedTiles) {
+            if (t.hasShip()) {
                 return false;
             }
         }
@@ -453,11 +440,11 @@ public class Controller {
         usersBoard.setHorizontal(false);
         boolean canVertical = isValidPlacement();
 
-        if(canHorizontal && canVertical) {
+        if (canHorizontal && canVertical) {
             return 0;
-        } else if(canHorizontal) {
+        } else if (canHorizontal) {
             return 1;
-        } else if(canVertical) {
+        } else if (canVertical) {
             return 2;
         } else {
             return 3;
@@ -467,23 +454,23 @@ public class Controller {
     private int getShipsLeftOver() {
         int shipsLeftOver = 0;
 
-        if(selectedShip instanceof CarrierShip) {
+        if (selectedShip instanceof CarrierShip) {
             shipsLeftOver = GameManager.getCarrierShips()[0] - GameManager.getCarrierShips()[1];
         }
 
-        if(selectedShip instanceof BattleShip) {
+        if (selectedShip instanceof BattleShip) {
             shipsLeftOver = GameManager.getBattleshipShips()[0] - GameManager.getBattleshipShips()[1];
         }
 
-        if(selectedShip instanceof DestroyerShip) {
+        if (selectedShip instanceof DestroyerShip) {
             shipsLeftOver = GameManager.getDestroyerShips()[0] - GameManager.getDestroyerShips()[1];
         }
 
-        if(selectedShip instanceof SuperPatrolShip) {
+        if (selectedShip instanceof SuperPatrolShip) {
             shipsLeftOver = GameManager.getSuperPatrolShips()[0] - GameManager.getSuperPatrolShips()[1];
         }
 
-        if(selectedShip instanceof PatrolBoatShip) {
+        if (selectedShip instanceof PatrolBoatShip) {
             shipsLeftOver = GameManager.getPatrolBoatShips()[0] - GameManager.getPatrolBoatShips()[1];
         }
 
@@ -496,7 +483,7 @@ public class Controller {
     private void updateView() {
         GameManager.checkRound(); // Checks for every round if it's over!
 
-        switch(GameManager.getGameState()) {
+        switch (GameManager.getGameState()) {
             case SETUP -> {
                 if (selectedShip != null)
                     GameView.setSelectedShip(selectedShip.toString() + " " + getShipsLeftOver() + "x");
@@ -534,10 +521,11 @@ public class Controller {
 
     /**
      * Checks if the selected tile is on the users board
+     *
      * @return true if selected tile is on the users board
      */
     private boolean tileOnUsersBoard() {
-        if(selectedTile.getBoard() == usersBoard)
+        if (selectedTile.getBoard() == usersBoard)
             return true;
         else
             return false;
@@ -554,27 +542,27 @@ public class Controller {
      * When the randomize button is clicked it will randomize all ship placements
      */
     public void randomizeButtonClicked() {
-        while(GameManager.getCarrierShips()[1] < GameManager.getCarrierShips()[0]) { // Carrier ships 2 max
+        while (GameManager.getCarrierShips()[1] < GameManager.getCarrierShips()[0]) { // Carrier ships 2 max
             selectedShip = new CarrierShip(0, 0, true);
             randomizePlacement();
         }
 
-        while(GameManager.getBattleshipShips()[1] < GameManager.getBattleshipShips()[0]) { // Battleships 3 max
+        while (GameManager.getBattleshipShips()[1] < GameManager.getBattleshipShips()[0]) { // Battleships 3 max
             selectedShip = new BattleShip(0, 0, true);
             randomizePlacement();
         }
 
-        while(GameManager.getDestroyerShips()[1] < GameManager.getDestroyerShips()[0]) { // Destroyer ships 5 max
+        while (GameManager.getDestroyerShips()[1] < GameManager.getDestroyerShips()[0]) { // Destroyer ships 5 max
             selectedShip = new DestroyerShip(0, 0, true);
             randomizePlacement();
         }
 
-        while(GameManager.getSuperPatrolShips()[1] < GameManager.getSuperPatrolShips()[0]) { // Super Patrol 8 max
+        while (GameManager.getSuperPatrolShips()[1] < GameManager.getSuperPatrolShips()[0]) { // Super Patrol 8 max
             selectedShip = new SuperPatrolShip(0, 0, true);
             randomizePlacement();
         }
 
-        while(GameManager.getPatrolBoatShips()[1] < GameManager.getPatrolBoatShips()[0]) { // Patrol boats 10 max
+        while (GameManager.getPatrolBoatShips()[1] < GameManager.getPatrolBoatShips()[0]) { // Patrol boats 10 max
             selectedShip = new PatrolBoatShip(0, 0, true);
             randomizePlacement();
         }
@@ -587,9 +575,9 @@ public class Controller {
      * The function that randomizeButtonClicked uses to randomize everything
      */
     private void randomizePlacement() {
-        int x = (int) (14*Math.random());
-        int y = (int) (9*Math.random());
-        int horizontal = (int) (2*Math.random()); // 0 horizontal, 1 vertical
+        int x = (int) (14 * Math.random());
+        int y = (int) (9 * Math.random());
+        int horizontal = (int) (2 * Math.random()); // 0 horizontal, 1 vertical
 
         selectedTile = usersBoard.getTile(x, y);
 
@@ -609,34 +597,103 @@ public class Controller {
         }
     }
 
-    public static void computerPlayerTurn() {
+    public static void computerPlayerTurn() throws InterruptedException {
+        Tile tempTile = shootRandomTile();
+        while (tempTile != null) {
+            tempTile = shootRandomTile();
+        }
+        GameManager.setGameState(GameState.USERROUND);
+    }
+
+    public void computerSmartTurn() {
+        Tile tempTile;
+        if(((ComputerPlayer) opponentsBoard.getPlayer()).getHitShip() == null) {
+            tempTile = shootRandomTile();
+        } else {
+            tempTile = ((ComputerPlayer) opponentsBoard.getPlayer()).getHitShip();
+        }
+        if (tempTile != null) {
+            System.out.println("2 Tile x: " + tempTile.getXPos() + " Tile y: " + tempTile.getYPos());
+            ((ComputerPlayer) opponentsBoard.getPlayer()).setHitShip(tempTile);
         while(true) {
-            int[] posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
-            Tile tile = usersBoard.getTile(posTile[0], posTile[1]);
-            while (tile.isShot()) {
-                posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
-                tile = usersBoard.getTile(posTile[0], posTile[1]);
-            }
-            if (!tile.hasShip()) {
-                usersBoard.setShot(tile, false);
-                break;
-                // miss event
+            Tile neighTile;
+            if (((ComputerPlayer) opponentsBoard.getPlayer()).getVelocity()[0] == 0 &&
+                    ((ComputerPlayer) opponentsBoard.getPlayer()).getVelocity()[1] == 0) {
+                neighTile = ((ComputerPlayer) opponentsBoard.getPlayer()).shootRandomNeighbour(tempTile);
+                while (neighTile != null && neighTile.isShot()) {
+                    neighTile = ((ComputerPlayer) opponentsBoard.getPlayer()).shootRandomNeighbour(tempTile);
+                    System.out.println("5 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
+                }
+                System.out.println("3 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
             } else {
-                tile.getShip().hitShip();
-                opponentsBoard.getPlayer().addPoint();
-                tile.setIsShot(true);
-                usersBoard.setShot(tile, true);
-                if (tile.getShip().getShipLives() == 0) {
-                    GameManager.addKill(tile.getShip(), opponentsBoard.getPlayer());
-                    opponentsBoard.getPlayer().addPoint();
-                    if (GameManager.checkGameEnd() == 1 || GameManager.checkGameEnd() == 2) {
-                        GameView.setMessage(GameManager.getWinner() + " is the winner!");
-                        GameManager.setGameState(GameState.END);
-                    }
+                neighTile = ((ComputerPlayer) opponentsBoard.getPlayer()).shootNeighbour(tempTile);
+                System.out.println("4 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
+                while (neighTile != null && neighTile.isShot()) {
+                    neighTile = ((ComputerPlayer) opponentsBoard.getPlayer()).shootNeighbour(neighTile);
+                    System.out.println("5 Tile x: " +  neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
                 }
             }
+                if (!neighTile.hasShip()) {
+                    neighTile.setIsShot(true);
+                    usersBoard.setShot(neighTile, false);
+                    ((ComputerPlayer) opponentsBoard.getPlayer()).setVelocity(tempTile, neighTile);
+                    System.out.println("6 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
+                    break;
+                }
+                if (neighTile.hasShip()) {
+                    ((ComputerPlayer) opponentsBoard.getPlayer()).setVelocity(neighTile, tempTile);
+                    System.out.println("7 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
+                    int[] killsBeforeShot = GameManager.getOpponentKills();
+                    shootTile(neighTile, opponentsBoard);
+                    int[] killsAfterShot = GameManager.getOpponentKills();
+                    if(!Arrays.equals(killsBeforeShot, killsAfterShot)){
+                        ((ComputerPlayer) opponentsBoard.getPlayer()).resetVelocity();
+                    }
+                    tempTile = neighTile;
+                }
+            }
+        System.out.println("HIER KOMT DIE");
         }
-        GameManager.nextTurn();
+        System.out.println("HIER KOMT DIE OOK!");
+        GameManager.setGameState(GameState.USERROUND);
+    }
+
+    public static Tile shootRandomTile() {
+        int[] posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
+        Tile tile = usersBoard.getTile(posTile[0], posTile[1]);
+        while (tile.isShot()) {
+            posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
+            tile = usersBoard.getTile(posTile[0], posTile[1]);
+        }
+        System.out.println("Tile x: " + tile.getXPos() + " Tile y: " + tile.getYPos());
+        if (!tile.hasShip()) {
+            usersBoard.setShot(tile, false);
+            tile.setIsShot(true);
+            return null;
+            // miss event
+        } else {
+            shootTile(tile, opponentsBoard);
+        }
+        return tile;
+    }
+
+    public static void shootTile(Tile tile, Board board) {
+        Board otherBoard = board.getPlayer().getName().equals(usersBoard.getPlayer().getName()) ? opponentsBoard : usersBoard;
+        tile.getShip().hitShip();
+        board.getPlayer().addPoint();
+        tile.setIsShot(true);
+        GameView.setMessage(board.getPlayer().getName() + " Hit a ship!");
+        otherBoard.setShot(tile, true);
+        if (tile.getShip().getShipLives() == 0) {
+            GameManager.addKill(tile.getShip(), board.getPlayer());
+            board.getPlayer().addPoint();
+            GameView.setMessage(board.getPlayer().getName() + " Sunk a ship!");
+            if (GameManager.checkGameEnd() == 1 || GameManager.checkGameEnd() == 2) {
+                GameView.setMessage(GameManager.getWinner() + " is the winner!");
+                GameManager.setGameState(GameState.END);
+            }
+        }
+        GameManager.setGameState(GameState.USERROUND);
     }
 
     public void radarButtonClicked() {

@@ -11,8 +11,12 @@ import java.util.Random;
 
 public class ComputerPlayer extends Player {
     private int[] ships = {0, 0, 0, 0, 0}; // PatrolBoat, SuperPatrol, Destroyer, Battleship, Carrier
+    private int[] direction = {1, -1, 1, -1};
+    private static int[] velocity = {0 , 0};
+    private Tile hitShip;
     private Ship currShip;
     private Board board;
+    private Board userBoard;
     private boolean isPlaced;
 
     public ComputerPlayer() {
@@ -21,6 +25,7 @@ public class ComputerPlayer extends Player {
 
     public void setUp() {
         this.board = GameManager.getOpponentBoard();
+        this.userBoard = GameManager.getUserBoard();
         this.isPlaced = false;
 
         setShips();
@@ -248,5 +253,55 @@ public class ComputerPlayer extends Player {
         return shot;
     }
 
+    public Tile shootRandomNeighbour(Tile tile){
+        int[] posXY = {tile.getXPos(), tile.getYPos()};
+        int i = (int) (Math.random()*4);
+        if(!direction.equals(new int[]{0, 0, 0, 0})){
+        while(direction[i] == 0) {
+            i = (int) (Math.random() * 4);
+        }
+        if (i < 2 && posXY[0] > 0 && posXY[0] < 15) {
+            posXY[0] = posXY[0] + direction[i];
+        } else if (posXY[1] > 0 && posXY[1] < 10){
+            posXY[1] = posXY[1] + direction[i];
+        }
+        } else {
+            return null;
+        }
+        direction[i] = 0;
+        return userBoard.getTile(posXY[0], posXY[1]);
+    }
 
+    public Tile shootNeighbour(Tile tile) {
+        int[] posXY = {tile.getXPos(), tile.getYPos()};
+        if(posXY[0] > 0 && posXY[0] < 15) {
+            posXY[0] = posXY[0] + velocity[0];
+        }
+        if(posXY[1] > 0 && posXY[1] < 10){
+            posXY[1] = posXY[1] + velocity[1];
+        }
+        System.out.println("PosX = " + posXY[0] + "PosY = " + posXY[1]);
+        return userBoard.getTile(posXY[0], posXY[1]);
+    }
+
+    public void setVelocity(Tile tile, Tile tile2) {
+        velocity = new int[]{tile.getXPos() - tile2.getXPos(), tile.getYPos() - tile2.getYPos()};
+    }
+
+    public int[] getVelocity(){
+        return velocity;
+    }
+
+    public void resetVelocity(){
+        velocity[0] = 0;
+        velocity[1] = 0;
+    }
+
+    public void setHitShip(Tile tile){
+        this.hitShip = tile;
+    }
+
+    public Tile getHitShip(){
+        return hitShip;
+    }
 }
