@@ -120,8 +120,8 @@ public class Controller {
 
                 if (selectedShip instanceof SuperPatrolShip) {
                     if (GameManager.canAddSuperPatrol()) {
+                        Ship ship = new SuperPatrolShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                         for (Tile t : selectedTiles) {
-                            Ship ship = new SuperPatrolShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                             if (!t.hasShip()) {
                                 t.setShip(ship);
                                 t.setHasShip(true);
@@ -133,8 +133,8 @@ public class Controller {
 
                 if (selectedShip instanceof DestroyerShip) {
                     if (GameManager.canAddDestroyerShips()) {
+                        Ship ship = new DestroyerShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                         for (Tile t : selectedTiles) {
-                            Ship ship = new DestroyerShip(tile.getXPos(), tile.getYPos(), usersBoard.isHorizontal());
                             if (!t.hasShip()) {
                                 t.setShip(ship);
                                 t.setHasShip(true);
@@ -626,18 +626,12 @@ public class Controller {
         if(player.getHitShip() == null) {
             firstHitTile = shootRandomTile();
             if(firstHitTile != null) {
-                int pointsBeforeShot = player.getPoints();
-
-                shootTile(firstHitTile, opponentsBoard);
-
-                int pointsAfterShot = player.getPoints();
-
-                if(pointsAfterShot-pointsBeforeShot == 2) {
+                if(isKill(firstHitTile, player)) {
                     System.out.println("Reset first time");
                     reset = true;
+                } else {
+                    player.setHitShip(firstHitTile);
                 }
-
-                player.setHitShip(firstHitTile);
                 System.out.println("New First hit at Index X: " + firstHitTile.getXPos() + "; Index Y: " + firstHitTile.getYPos());
             } else {
                 System.out.println("No hit");
@@ -657,8 +651,11 @@ public class Controller {
                     if(firstHitTile == null)
                         break;
                     reset = false;
-                    player.setHitShip(firstHitTile);
-                    shootTile(firstHitTile, opponentsBoard);
+                    if(isKill(firstHitTile, player)) {
+                        reset = true;
+                    } else {
+                        player.setHitShip(firstHitTile);
+                    }
                 }
 
                 if (player.getVelocity()[0] == 0 &&
@@ -673,7 +670,6 @@ public class Controller {
 
                     while(neighbourTile != null && neighbourTile.isShot()) {
                         neighbourTile = player.shootNeighbour(neighbourTile);
-
                     }
                 }
 
@@ -689,15 +685,9 @@ public class Controller {
                     System.out.println("Tile has ship!");
                     player.setVelocity(neighbourTile, firstHitTile);
 
-                    int[] killsBeforeShot = GameManager.getOpponentKills();
-
-                    shootTile(neighbourTile, opponentsBoard);
-
-                    int[] killsAfterShot = GameManager.getOpponentKills();
-
                     firstHitTile = neighbourTile;
 
-                    if(!Arrays.equals(killsBeforeShot, killsAfterShot)) {
+                    if(isKill(neighbourTile, player)) {
                         System.out.println("Resetting");
                         player.resetShooting();
                         reset = true;
@@ -726,6 +716,14 @@ public class Controller {
             // miss event
         }
         return tile;
+    }
+
+    public static boolean isKill(Tile tile, Player player) {
+        int pointsBeforeShot = player.getPoints();
+        shootTile(tile, opponentsBoard);
+        int pointsAfterShot = player.getPoints();
+
+        return pointsAfterShot - pointsBeforeShot == 2;
     }
 
     /**

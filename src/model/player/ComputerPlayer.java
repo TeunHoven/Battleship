@@ -313,7 +313,7 @@ public class ComputerPlayer extends Player {
         posXY[0] = posXY[0] + velocity[0];
         posXY[1] = posXY[1] + velocity[1];
 
-        if(posXY[0] < 0 || posXY[1] < 0 || posXY[0] >= Board.WIDTH || posXY[1] >= Board.HEIGHT) {
+        if(posXY[0] <= 0 || posXY[1] <= 0 || posXY[0] > Board.WIDTH-1 || posXY[1] > Board.HEIGHT-1) {
             turnAround();
             posXY[0] = posXY[0] + velocity[0];
             posXY[1] = posXY[1] + velocity[1];
