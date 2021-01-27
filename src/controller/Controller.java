@@ -26,7 +26,7 @@ public class Controller {
     private static Tile[] selectedTiles;
 
     private boolean radarUsed = false;
-    private static final int[][] surroundedLocations = {{1,0}, {1,1}, {0,1}, {-1,1}, {-1,0}, {-1,-1}, {0, -1}, {1, -1}};
+    private static final int[][] surroundedLocations = {{0, 0}, {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0}, {-1,-1}, {0, -1}, {1, -1}};
 
     private Controller() {
 
@@ -247,8 +247,8 @@ public class Controller {
                     opponentsBoard.setShot(selectedTile, false);
                 }
             } else {
-                Tile[] surroundedTiles = new Tile[8];
-                for(int i=0; i<8; i++) { // To get all the surrounded tiles
+                Tile[] surroundedTiles = new Tile[9];
+                for(int i=0; i<9; i++) { // To get all the surrounded tiles
                     int x = selectedTile.getXPos()+surroundedLocations[i][0];
                     int y = selectedTile.getYPos()+surroundedLocations[i][1];
 
