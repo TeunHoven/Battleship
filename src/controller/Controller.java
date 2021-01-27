@@ -597,6 +597,10 @@ public class Controller {
         }
     }
 
+    /**
+     * The basic AI implementation.
+     * It only shoots at random tiles.
+     */
     public static void computerPlayerTurn() {
         Tile tile = shootRandomTile();
         while (tile != null) {
@@ -609,6 +613,11 @@ public class Controller {
         GameManager.setGameState(GameState.USERROUND);
     }
 
+    /**
+     * A more advanced AI implementation.
+     * It starts with shooting at random tiles,
+     * but when he hits a ship it will try to sink this ship by shooting neighbouring tiles.
+     */
     public void computerSmartTurn() {
         ComputerPlayer player = ((ComputerPlayer) opponentsBoard.getPlayer());
         Tile firstHitTile;
@@ -699,6 +708,10 @@ public class Controller {
         GameManager.nextTurn();
     }
 
+    /**
+     * Shoots at a random tile, if there is a ship on the randomly selected tile return this tile.
+     * @return A Tile if the tile that was shot contains a Ship
+     */
     public static Tile shootRandomTile() {
         int[] posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
         Tile tile = usersBoard.getTile(posTile[0], posTile[1]);
@@ -716,6 +729,11 @@ public class Controller {
         return tile;
     }
 
+    /**
+     * Shoots a Tile on a Board and adjusts shipLives and Player points accordingly.
+     * @param tile - The Tile that to be shot
+     * @param board - The board to which the tile belongs to
+     */
     public static void shootTile(Tile tile, Board board) {
         Board otherBoard = board.getPlayer().getName().equals(usersBoard.getPlayer().getName()) ? opponentsBoard : usersBoard;
         board.getPlayer().addPoint();
@@ -734,6 +752,9 @@ public class Controller {
         }
     }
 
+    /**
+     * ????????????????????
+     */
     public void radarButtonClicked() {
         radarUsed = !radarUsed;
         if(radarUsed) {
@@ -743,6 +764,10 @@ public class Controller {
         }
     }
 
+    /**
+     * Checks whether the Player has placed all of his ships and thus is ready to play.
+     * @return True if the player has placed all of his ships
+     */
     private boolean isPlayerReady() {
         if(GameManager.getPatrolBoatShips()[0] == GameManager.getPatrolBoatShips()[1]
                 && GameManager.getSuperPatrolShips()[0] == GameManager.getSuperPatrolShips()[1]

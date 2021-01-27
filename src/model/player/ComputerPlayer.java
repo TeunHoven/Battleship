@@ -31,6 +31,9 @@ public class ComputerPlayer extends Player {
         setShips();
     }
 
+    /**
+     * Randomly places the ships on the board for the ComputerPlayer.
+     */
     private void setShips() {
         while(!isPlaced) {
             while(ships[4] < 2) { // Carrier ships 2 max
@@ -157,6 +160,7 @@ public class ComputerPlayer extends Player {
                 }
             }
 
+            //Final check to ensure all ships are placed
             if(ships[0] == 10 && ships[1] == 8 && ships[2] == 5 && ships[3] == 3 && ships[4] == 2) {
                 isPlaced = true;
                 setReady();
@@ -164,6 +168,12 @@ public class ComputerPlayer extends Player {
         }
     }
 
+    /**
+     * Assigns a certain ship to a Tile with the given coordinates.
+     * @param x - The X coordinate of the selected Tile
+     * @param y - THe Y coordinate of the selected Tile
+     * @param horizontal - True if the ship is to be place horizontally, false if the ship is to be placed vertically
+     */
     private void placeShip(int x, int y, boolean horizontal) {
         Tile tile = board.getTile(x, y);
         board.setHorizontal(horizontal);
@@ -219,6 +229,11 @@ public class ComputerPlayer extends Player {
         }
     }
 
+    /**
+     * Checks whether all the Tiles given have a ship assigned to them.
+     * @param tiles - The Tiles that need to be checked
+     * @return True if all Tiles have a ship on them
+     */
     private boolean hasShipOnTile(Tile[] tiles) {
         for(Tile t: tiles) {
             if(t.hasShip()) {
@@ -229,6 +244,11 @@ public class ComputerPlayer extends Player {
         return false;
     }
 
+    /**
+     * Checks whether the selected placement is valid.
+     * @param tile - The tile selected
+     * @return True if all the neighbouring tiles are inbounds and are in a straight line
+     */
     private boolean isValidPlacement(Tile tile) {
         Tile[] tiles = board.getTileNeighboursHorizontal(tile, currShip.getShipLength());
 
@@ -246,6 +266,10 @@ public class ComputerPlayer extends Player {
         return true;
     }
 
+    /**
+     * Produces a random X, Y coordinate to fire a shot at.
+     * @return An int[] with X and Y coordinates
+     */
     public int[] randomShot(){
         int x = (int) (14*Math.random());
         int y = (int) (9*Math.random());
@@ -253,6 +277,11 @@ public class ComputerPlayer extends Player {
         return shot;
     }
 
+    /**
+     * Returns a random neighbouring tile.
+     * @param tile - The selected tile
+     * @return A neighbouring Tile
+     */
     public Tile shootRandomNeighbour(Tile tile){
         int[] posXY = {tile.getXPos(), tile.getYPos()};
         int i = (int) (Math.random()*4);
@@ -276,6 +305,11 @@ public class ComputerPlayer extends Player {
         return userBoard.getTile(posXY[0], posXY[1]);
     }
 
+    /**
+     * Returns a neighbouring tile based on the velocity produced by previously hitting a ship.
+     * @param tile - The selected tile
+     * @return A neighbouring tile
+     */
     public Tile shootNeighbour(Tile tile) {
         int[] posXY = {tile.getXPos(), tile.getYPos()};
 
@@ -288,6 +322,11 @@ public class ComputerPlayer extends Player {
         return userBoard.getTile(posXY[0], posXY[1]);
     }
 
+    /**
+     * Sets the velocity variable based on the given tiles
+     * @param tile - The first tile to be compared
+     * @param tile2 - The second tile to be compared
+     */
     public void setVelocity(Tile tile, Tile tile2) {
         velocity = new int[]{tile.getXPos() - tile2.getXPos(), tile.getYPos() - tile2.getYPos()};
         if(velocity[0] < 0)
@@ -303,31 +342,52 @@ public class ComputerPlayer extends Player {
         System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
     }
 
+    /**
+     * Changes the velocity in the opposite direction.
+     */
     public void turnAround() {
         velocity[0] *= -1;
         velocity[1] *= -1;
         System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
     }
 
+    /**
+     * Returns the current velocity with which the computer is targeting tiles.
+     * @return An int[] with the current velocity
+     */
     public int[] getVelocity(){
         return velocity;
     }
 
+    /**
+     * Resets the velocity.
+     */
     public void resetVelocity(){
         velocity[0] = 0;
         velocity[1] = 0;
     }
 
+    /**
+     * Resets the targeting mode, computer player goes back to hunting mode.
+     */
     public void resetShooting() {
         resetVelocity();
         hitShip = null;
         direction = new int[]{1, -1, 1, -1};
     }
 
+    /**
+     * Sets the variable that stores the tile of the last ship ComputerPlayer hit.
+     * @param tile - The tile that was hit
+     */
     public void setHitShip(Tile tile){
         this.hitShip = tile;
     }
 
+    /**
+     * Returns the tile of the last ship that ComputerPlayer hit.
+     * @return The tile that was last hit
+     */
     public Tile getHitShip(){
         return hitShip;
     }
