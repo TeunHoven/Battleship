@@ -597,65 +597,106 @@ public class Controller {
         }
     }
 
-    public static void computerPlayerTurn() throws InterruptedException {
-        Tile tempTile = shootRandomTile();
-        while (tempTile != null) {
-            tempTile = shootRandomTile();
+    public static void computerPlayerTurn() {
+        Tile tile = shootRandomTile();
+        while (tile != null) {
+            tile = shootRandomTile();
+        }
+
+        if(tile.hasShip()) {
+            shootTile(tile, opponentsBoard);
         }
         GameManager.setGameState(GameState.USERROUND);
     }
 
     public void computerSmartTurn() {
-        Tile tempTile;
-        if(((ComputerPlayer) opponentsBoard.getPlayer()).getHitShip() == null) {
-            tempTile = shootRandomTile();
-        } else {
-            tempTile = ((ComputerPlayer) opponentsBoard.getPlayer()).getHitShip();
-        }
-        if (tempTile != null) {
-            System.out.println("2 Tile x: " + tempTile.getXPos() + " Tile y: " + tempTile.getYPos());
-            ((ComputerPlayer) opponentsBoard.getPlayer()).setHitShip(tempTile);
-        while(true) {
-            Tile neighTile;
-            if (((ComputerPlayer) opponentsBoard.getPlayer()).getVelocity()[0] == 0 &&
-                    ((ComputerPlayer) opponentsBoard.getPlayer()).getVelocity()[1] == 0) {
-                neighTile = ((ComputerPlayer) opponentsBoard.getPlayer()).shootRandomNeighbour(tempTile);
-                while (neighTile != null && neighTile.isShot()) {
-                    neighTile = ((ComputerPlayer) opponentsBoard.getPlayer()).shootRandomNeighbour(tempTile);
-                    System.out.println("5 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
-                }
-                System.out.println("3 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
+        ComputerPlayer player = ((ComputerPlayer) opponentsBoard.getPlayer());
+        Tile firstHitTile;
+        boolean reset = false;
+
+        if(player.getHitShip() == null) {
+            firstHitTile = shootRandomTile();
+            if(firstHitTile != null) {
+                shootTile(firstHitTile, opponentsBoard);
+                System.out.println("New First hit at Index X: " + firstHitTile.getXPos() + "; Index Y: " + firstHitTile.getYPos());
             } else {
-                neighTile = ((ComputerPlayer) opponentsBoard.getPlayer()).shootNeighbour(tempTile);
-                System.out.println("4 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
-                while (neighTile != null && neighTile.isShot()) {
-                    neighTile = ((ComputerPlayer) opponentsBoard.getPlayer()).shootNeighbour(neighTile);
-                    System.out.println("5 Tile x: " +  neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
-                }
+                System.out.println("No hit");
             }
-                if (!neighTile.hasShip()) {
-                    neighTile.setIsShot(true);
-                    usersBoard.setShot(neighTile, false);
-                    ((ComputerPlayer) opponentsBoard.getPlayer()).setVelocity(tempTile, neighTile);
-                    System.out.println("6 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
+        } else {
+            firstHitTile = player.getHitShip();
+            System.out.println("First hit allready at Index X: " + firstHitTile.getXPos() + "; Index Y: " + firstHitTile.getYPos());
+        }
+
+        if (firstHitTile != null) {
+            while(true) {
+                player.setHitShip(firstHitTile);
+                Tile neighbourTile;
+
+                if(reset) {
+                    firstHitTile = shootRandomTile();
+                    if(firstHitTile == null)
+                        break;
+                    reset = false;
+                    player.setHitShip(firstHitTile);
+                    shootTile(firstHitTile, opponentsBoard);
+                }
+
+                if (player.getVelocity()[0] == 0 &&
+                        player.getVelocity()[1] == 0) {
+                    neighbourTile = player.shootRandomNeighbour(firstHitTile);
+
+                    while(neighbourTile == null) {
+                        neighbourTile = player.shootRandomNeighbour(firstHitTile);
+                    }
+
+                    while (neighbourTile != null && neighbourTile.isShot()) {
+                        neighbourTile = player.shootRandomNeighbour(firstHitTile);
+                    }
+                } else {
+                    neighbourTile = player.shootNeighbour(firstHitTile);
+
+                    if(neighbourTile == null) {
+                        System.out.println("Not meant to be");
+                        player.turnAround();
+                        neighbourTile = player.shootNeighbour(firstHitTile);
+                    }
+
+                    while(neighbourTile.isShot()) {
+                        neighbourTile = player.shootNeighbour(neighbourTile);
+                    }
+                }
+
+                if (!neighbourTile.hasShip()) {
+                    neighbourTile.setIsShot(true);
+                    usersBoard.setShot(neighbourTile, false);
+                    player.turnAround();
+                    System.out.println("NO hit");
                     break;
                 }
-                if (neighTile.hasShip()) {
-                    ((ComputerPlayer) opponentsBoard.getPlayer()).setVelocity(neighTile, tempTile);
-                    System.out.println("7 Tile x: " + neighTile.getXPos() + " Tile y: " + neighTile.getYPos());
-                    int[] killsBeforeShot = GameManager.getOpponentKills();
-                    shootTile(neighTile, opponentsBoard);
-                    int[] killsAfterShot = GameManager.getOpponentKills();
-                    if(!Arrays.equals(killsBeforeShot, killsAfterShot)){
-                        ((ComputerPlayer) opponentsBoard.getPlayer()).resetVelocity();
+
+                if (neighbourTile.hasShip()) {
+                    System.out.println("Tile has ship!");
+                    player.setVelocity(neighbourTile, firstHitTile);
+
+                    int pointsBeforeShot = player.getPoints();
+                    Ship firstHitShip = firstHitTile.getShip();
+                    Ship neighbourTileShip = neighbourTile.getShip();
+
+                    shootTile(neighbourTile, opponentsBoard);
+
+                    int pointsAfterShot = player.getPoints();
+
+                    firstHitTile = neighbourTile;
+
+                    if(pointsAfterShot-pointsBeforeShot != 1) {
+                        System.out.println("Resetting");
+                        player.resetShooting();
+                        reset = true;
                     }
-                    tempTile = neighTile;
                 }
             }
-        System.out.println("HIER KOMT DIE");
         }
-        System.out.println("HIER KOMT DIE OOK!");
-        GameManager.setGameState(GameState.USERROUND);
+        GameManager.nextTurn();
     }
 
     public static Tile shootRandomTile() {
@@ -665,26 +706,24 @@ public class Controller {
             posTile = ((ComputerPlayer) opponentsBoard.getPlayer()).randomShot();
             tile = usersBoard.getTile(posTile[0], posTile[1]);
         }
-        System.out.println("Tile x: " + tile.getXPos() + " Tile y: " + tile.getYPos());
+        System.out.println("Random tile shot Tile x: " + tile.getXPos() + " Tile y: " + tile.getYPos());
         if (!tile.hasShip()) {
             usersBoard.setShot(tile, false);
             tile.setIsShot(true);
             return null;
             // miss event
-        } else {
-            shootTile(tile, opponentsBoard);
         }
         return tile;
     }
 
     public static void shootTile(Tile tile, Board board) {
         Board otherBoard = board.getPlayer().getName().equals(usersBoard.getPlayer().getName()) ? opponentsBoard : usersBoard;
-        tile.getShip().hitShip();
         board.getPlayer().addPoint();
-        tile.setIsShot(true);
+        System.out.println("Shot + Lives boat:" + tile.getShip().getShipLives());
         GameView.setMessage(board.getPlayer().getName() + " Hit a ship!");
         otherBoard.setShot(tile, true);
-        if (tile.getShip().getShipLives() == 0) {
+
+        if (tile.getShip().getShipLives() <= 0) {
             GameManager.addKill(tile.getShip(), board.getPlayer());
             board.getPlayer().addPoint();
             GameView.setMessage(board.getPlayer().getName() + " Sunk a ship!");
@@ -693,7 +732,6 @@ public class Controller {
                 GameManager.setGameState(GameState.END);
             }
         }
-        GameManager.setGameState(GameState.USERROUND);
     }
 
     public void radarButtonClicked() {

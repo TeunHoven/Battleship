@@ -256,36 +256,57 @@ public class ComputerPlayer extends Player {
     public Tile shootRandomNeighbour(Tile tile){
         int[] posXY = {tile.getXPos(), tile.getYPos()};
         int i = (int) (Math.random()*4);
+
         if(!direction.equals(new int[]{0, 0, 0, 0})){
-        while(direction[i] == 0) {
-            i = (int) (Math.random() * 4);
-        }
-        if (i < 2 && posXY[0] > 0 && posXY[0] < 15) {
-            posXY[0] = posXY[0] + direction[i];
-        } else if (posXY[1] > 0 && posXY[1] < 10){
-            posXY[1] = posXY[1] + direction[i];
-        }
+            while(direction[i] == 0) {
+                i = (int) (Math.random() * 4);
+            }
+            if (i < 2) {
+                posXY[0] = posXY[0] + direction[i];
+            } else {
+                posXY[1] = posXY[1] + direction[i];
+            }
         } else {
             return null;
         }
+
+        System.out.println("Shoot Random Index X: " + posXY[0] + "; Index Y: " + posXY[1]);
+        System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
         direction[i] = 0;
         return userBoard.getTile(posXY[0], posXY[1]);
     }
 
     public Tile shootNeighbour(Tile tile) {
         int[] posXY = {tile.getXPos(), tile.getYPos()};
-        if(posXY[0] > 0 && posXY[0] < 15) {
-            posXY[0] = posXY[0] + velocity[0];
-        }
-        if(posXY[1] > 0 && posXY[1] < 10){
-            posXY[1] = posXY[1] + velocity[1];
-        }
-        System.out.println("PosX = " + posXY[0] + "PosY = " + posXY[1]);
+
+        posXY[0] = posXY[0] + velocity[0];
+
+        posXY[1] = posXY[1] + velocity[1];
+
+        System.out.println("Shoot Neighbour Index X: " + posXY[0] + "; Index Y: " + posXY[1]);
+        System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
         return userBoard.getTile(posXY[0], posXY[1]);
     }
 
     public void setVelocity(Tile tile, Tile tile2) {
         velocity = new int[]{tile.getXPos() - tile2.getXPos(), tile.getYPos() - tile2.getYPos()};
+        if(velocity[0] < 0)
+            velocity[0] = -1;
+        else if (velocity[0] > 0)
+            velocity[0] = 1;
+
+        if(velocity[1] < 0)
+            velocity[1] = -1;
+        else if (velocity[1] > 0)
+            velocity[1] = 1;
+
+        System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
+    }
+
+    public void turnAround() {
+        velocity[0] *= -1;
+        velocity[1] *= -1;
+        System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
     }
 
     public int[] getVelocity(){
@@ -295,6 +316,12 @@ public class ComputerPlayer extends Player {
     public void resetVelocity(){
         velocity[0] = 0;
         velocity[1] = 0;
+    }
+
+    public void resetShooting() {
+        resetVelocity();
+        hitShip = null;
+        direction = new int[]{1, -1, 1, -1};
     }
 
     public void setHitShip(Tile tile){

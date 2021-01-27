@@ -90,6 +90,12 @@ public class Board extends Parent {
     public Tile getTile(int x, int y) {
         int index = ((y)*width)+(x);
 
+        if(x >= width || x < 0)
+            return null;
+        if(y >= height || y < 0) {
+            return null;
+        }
+
         if(index < 0 || index > 149)
             return null;
 

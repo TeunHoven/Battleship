@@ -70,5 +70,7 @@ public class Tile extends Rectangle {
 
     public void setIsShot(boolean isShot){
         this.isShot = isShot;
+        if(hasShip())
+            ship.hitShip();
     }
 }
