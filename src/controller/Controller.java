@@ -644,7 +644,7 @@ public class Controller {
             }
         } else {
             firstHitTile = player.getHitShip();
-            System.out.println("First hit allready at Index X: " + firstHitTile.getXPos() + "; Index Y: " + firstHitTile.getYPos());
+            System.out.println("First hit already at Index X: " + firstHitTile.getXPos() + "; Index Y: " + firstHitTile.getYPos());
         }
 
         if (firstHitTile != null) {
@@ -722,7 +722,6 @@ public class Controller {
         System.out.println("Random tile shot Tile x: " + tile.getXPos() + " Tile y: " + tile.getYPos());
         if (!tile.hasShip()) {
             usersBoard.setShot(tile, false);
-            tile.setIsShot(true);
             return null;
             // miss event
         }
@@ -732,7 +731,7 @@ public class Controller {
     /**
      * Shoots a Tile on a Board and adjusts shipLives and Player points accordingly.
      * @param tile - The Tile that to be shot
-     * @param board - The board to which the tile belongs to
+     * @param board - The board to which the shooting party belongs to
      */
     public static void shootTile(Tile tile, Board board) {
             Board otherBoard = board.getPlayer().getName().equals(usersBoard.getPlayer().getName()) ? opponentsBoard : usersBoard;
