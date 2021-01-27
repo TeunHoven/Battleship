@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class Board extends Parent {
     private Player player;
 
-    private int width, height;
+    public static final int WIDTH = 15, HEIGHT = 10;
 
     private ArrayList<Tile> tiles;
     private VBox rows;
@@ -30,9 +30,6 @@ public class Board extends Parent {
 
     public Board (Player player) {
         this.player = player;
-
-        this.width = 15;
-        this.height = 10;
 
         this.tiles = new ArrayList<>();
 
@@ -50,7 +47,7 @@ public class Board extends Parent {
     private void setUpBoard() {
         HBox letterCoordBox = new HBox(); // Horizontal Coordinates Box
 
-        for(int y=0; y < height; y++) {
+        for(int y=0; y < HEIGHT; y++) {
             HBox row = new HBox();
 
             // Puts a digit in front of the row, vertical coordinates (1 ... 10)
@@ -60,7 +57,7 @@ public class Board extends Parent {
             digit.setPrefWidth(Tile.SIZE);
             row.getChildren().add(digit);
 
-            for(int x=0; x < width; x++) {
+            for(int x=0; x < WIDTH; x++) {
                 // Puts a letter above each row, Horizontal coordinates (A ... O)
                 if(y == 0) {
                     Label letter = new Label("" + letterCoords.toCharArray()[x]);
@@ -99,11 +96,11 @@ public class Board extends Parent {
      * @requires 0 < x < 15 and 0 < y < 10
      */
     public Tile getTile(int x, int y) {
-        int index = ((y)*width)+(x);
+        int index = ((y)*WIDTH)+(x);
 
-        if(x >= width || x < 0)
+        if(x >= WIDTH || x < 0)
             return null;
-        if(y >= height || y < 0) {
+        if(y >= HEIGHT || y < 0) {
             return null;
         }
 

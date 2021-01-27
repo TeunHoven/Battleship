@@ -358,6 +358,7 @@ public class GameManager {
             userKills = kills;
         } else if (player == opponent) {
             opponentKills = kills;
+            System.out.println(opponentKills);
         }
     }
 

@@ -50,7 +50,9 @@ public class Ship {
      * Also checks whether the ship is sunk.
      */
     public void hitShip() {
-        if(shipLives <= 1) {
+        if(shipLives == 0) {
+            System.out.println("Ship is already dead");
+        } else if(shipLives == 1) {
             shipLives = 0;
             System.out.println("Dead");
         } else {

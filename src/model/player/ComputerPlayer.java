@@ -18,6 +18,7 @@ public class ComputerPlayer extends Player {
     private Board board;
     private Board userBoard;
     private boolean isPlaced;
+    private boolean hasTriedSameDirection = false;
 
     public ComputerPlayer() {
         super("Computer");
@@ -286,17 +287,13 @@ public class ComputerPlayer extends Player {
         int[] posXY = {tile.getXPos(), tile.getYPos()};
         int i = (int) (Math.random()*4);
 
-        if(!direction.equals(new int[]{0, 0, 0, 0})){
-            while(direction[i] == 0) {
-                i = (int) (Math.random() * 4);
-            }
-            if (i < 2) {
-                posXY[0] = posXY[0] + direction[i];
-            } else {
-                posXY[1] = posXY[1] + direction[i];
-            }
+        while(direction[i] == 0) {
+            i = (int) (Math.random() * 4);
+        }
+        if (i < 2) {
+            posXY[0] = posXY[0] + direction[i];
         } else {
-            return null;
+            posXY[1] = posXY[1] + direction[i];
         }
 
         System.out.println("Shoot Random Index X: " + posXY[0] + "; Index Y: " + posXY[1]);
@@ -314,8 +311,13 @@ public class ComputerPlayer extends Player {
         int[] posXY = {tile.getXPos(), tile.getYPos()};
 
         posXY[0] = posXY[0] + velocity[0];
-
         posXY[1] = posXY[1] + velocity[1];
+
+        if(posXY[0] < 0 || posXY[1] < 0 || posXY[0] >= Board.WIDTH || posXY[1] >= Board.HEIGHT) {
+            turnAround();
+            posXY[0] = posXY[0] + velocity[0];
+            posXY[1] = posXY[1] + velocity[1];
+        }
 
         System.out.println("Shoot Neighbour Index X: " + posXY[0] + "; Index Y: " + posXY[1]);
         System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
@@ -346,8 +348,15 @@ public class ComputerPlayer extends Player {
      * Changes the velocity in the opposite direction.
      */
     public void turnAround() {
-        velocity[0] *= -1;
-        velocity[1] *= -1;
+        if(hasTriedSameDirection) {
+            velocity[0] = 0;
+            velocity[1] = 0;
+            hasTriedSameDirection = false;
+        } else {
+            velocity[0] *= -1;
+            velocity[1] *= -1;
+            hasTriedSameDirection = true;
+        }
         System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
     }
 
