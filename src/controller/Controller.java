@@ -647,6 +647,7 @@ public class Controller {
 
                 if(reset) {
                     System.out.println("Resetting in the while");
+                    player.resetShooting();
                     firstHitTile = shootRandomTile();
                     if(firstHitTile == null)
                         break;
@@ -665,6 +666,10 @@ public class Controller {
                     while (neighbourTile != null && neighbourTile.isShot()) {
                         neighbourTile = player.shootRandomNeighbour(firstHitTile);
                     }
+
+                    if(neighbourTile == null) {
+                        reset = true;
+                    }
                 } else {
                     neighbourTile = player.shootNeighbour(firstHitTile);
 
@@ -673,7 +678,7 @@ public class Controller {
                     }
                 }
 
-                if (!neighbourTile.hasShip()) {
+                if (neighbourTile != null && !neighbourTile.hasShip()) {
                     neighbourTile.setIsShot(true);
                     usersBoard.setShot(neighbourTile, false);
                     player.turnAround();
@@ -681,7 +686,7 @@ public class Controller {
                     break;
                 }
 
-                if (neighbourTile.hasShip()) {
+                if (neighbourTile != null && neighbourTile.hasShip()) {
                     System.out.println("Tile has ship!");
                     player.setVelocity(neighbourTile, firstHitTile);
 
@@ -689,7 +694,6 @@ public class Controller {
 
                     if(isKill(neighbourTile, player)) {
                         System.out.println("Resetting");
-                        player.resetShooting();
                         reset = true;
                     }
                 }

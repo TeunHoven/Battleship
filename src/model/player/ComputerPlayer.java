@@ -272,8 +272,9 @@ public class ComputerPlayer extends Player {
      * @return An int[] with X and Y coordinates
      */
     public int[] randomShot(){
-        int x = (int) (14*Math.random());
-        int y = (int) (9*Math.random());
+        int x = (int) (Board.WIDTH*Math.random());
+        int y = (int) (Board.HEIGHT*Math.random());
+        System.out.println("Random Random Random shot, X: " + x + "; Y: " + y);
         int[] shot = {x, y};
         return shot;
     }
@@ -286,6 +287,10 @@ public class ComputerPlayer extends Player {
     public Tile shootRandomNeighbour(Tile tile){
         int[] posXY = {tile.getXPos(), tile.getYPos()};
         int i = (int) (Math.random()*4);
+
+        if(Arrays.equals(direction, new int[]{0, 0, 0, 0})) {
+            return null;
+        }
 
         while(direction[i] == 0) {
             i = (int) (Math.random() * 4);

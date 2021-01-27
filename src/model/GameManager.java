@@ -31,7 +31,7 @@ public class GameManager {
 
     private static Player user, opponent;
     private static Board userBoard, enemyBoard;
-    private static String winner = "DRAW";
+    private static String winner = "NONE";
 
     public static void setUp() {
         user = new HumanPlayer("Teun");
@@ -61,9 +61,17 @@ public class GameManager {
             case USERROUND:
                 GameView.setRound("Your turn #" + round + "");
                 GameView.setMessage("Click a tile!");
+
+                if(!winner.equals("NONE")) {
+                    setGameState(GameState.END);
+                }
                 break;
             case ENEMYROUND:
                 GameView.setRound("Opponents turn #" + round + "");
+
+                if(!winner.equals("NONE")) {
+                    setGameState(GameState.END);
+                }
                 break;
             case END:
                 break;
@@ -240,6 +248,10 @@ public class GameManager {
                 }
                 setWinner(opponent);
             }
+        }
+
+        if(winner.equals("NONE")) {
+            winner = "DRAW";
         }
     }
 
