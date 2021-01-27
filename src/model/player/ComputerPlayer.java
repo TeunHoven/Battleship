@@ -314,7 +314,6 @@ public class ComputerPlayer extends Player {
         int[] posXY = {tile.getXPos(), tile.getYPos()};
 
         posXY[0] = posXY[0] + velocity[0];
-
         posXY[1] = posXY[1] + velocity[1];
 
         System.out.println("Shoot Neighbour Index X: " + posXY[0] + "; Index Y: " + posXY[1]);
