@@ -8,9 +8,9 @@ public class Protocol {
      */
     public static final int PORT = 5000;
     /**
-     * Dimensions of the board are 15 x 10.
+     * Dimensions of the board are 10 x 15.
      */
-    public static final int[] DIMENSIONS = {15, 10};
+    public static final int[] DIMENSIONS = {10, 15};
     /**
      * The command separator is ";".
      */
@@ -288,8 +288,8 @@ public class Protocol {
      * sent by client.
      * @return a protocol Play message.
      */
-    public static String play() {
-        return MessageIdentifier.P.toString();
+    public static String play(Integer gameSize) {
+        return protocolMessage(new Object[]{MessageIdentifier.P.toString(), gameSize});
     }
 
     /**

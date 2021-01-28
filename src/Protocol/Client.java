@@ -7,8 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import Protocol.*;
-import Protocol.Exceptions.ExitProgram;
+import Protocol.Exceptions.*;
 
 /**
      * Client for BattleShip
@@ -61,7 +60,7 @@ import Protocol.Exceptions.ExitProgram;
             clearConnection();
             while (serverSock == null) {
                 String host = "127.0.0.1";
-                int port = 8888;
+                int port = 5000;
 
                 // try to open a Socket to the server
                 try {
@@ -193,10 +192,8 @@ import Protocol.Exceptions.ExitProgram;
             }
         }
 
-        @Override
-        public void handleHello()
-                throws ServerUnavailableException, ProtocolException {
-            String message = "" + ProtocolMessages.HELLO;
+        public void join(String name, Boolean radarEnabled, Boolean lobbyEnabled) throws ServerUnavailableException, ProtocolException {
+            String message = Protocol.join(name, radarEnabled, lobbyEnabled);
             sendMessage(message);
 
             message = null;
@@ -204,60 +201,49 @@ import Protocol.Exceptions.ExitProgram;
                 message = readLineFromServer();
             }
 
-            String[] args = message.split(ProtocolMessages.DELIMITER);
-            if(!message.startsWith(ProtocolMessages.HELLO + ProtocolMessages.DELIMITER)) {
+            String[] args = Protocol.parseCommands(message);
+            if(!message.startsWith(String.valueOf(Protocol.MessageIdentifier.S))) {
                 throw new ProtocolException("No valid response");
             } else {
-                System.out.println("> Welcome to the Hotel booking system of hotel:");
+                // TELL CLIENT THAT JOIN IS SUCCESFUL EN IDK!?
             }
         }
 
-        @Override
-        public void doIn(String guestName) throws ServerUnavailableException {
-            String message = "> Received: " + ProtocolMessages.IN + ProtocolMessages.DELIMITER + guestName + "\r\n";
-            System.out.print(message);
+        public void play(int gameSize) throws ServerUnavailableException{
+            String message = Protocol.play(gameSize);
+            sendMessage(message);
         }
 
-        @Override
-        public void doOut(String guestName) throws ServerUnavailableException {
-            String message = "> Received: " + ProtocolMessages.OUT + ProtocolMessages.DELIMITER + guestName + "\r\n";
-            System.out.print(message);
-        }
-        @Override
-        public void doRoom(String guestName) throws ServerUnavailableException {
-            String message = "> Received: " + ProtocolMessages.ROOM + ProtocolMessages.DELIMITER + guestName + "\r\n";
-            System.out.print(message);
-        }
-        @Override
-        public void doAct(String guestName, String password)
-                throws ServerUnavailableException {
-            String message = "> Received: " + ProtocolMessages.ACT + ProtocolMessages.DELIMITER + guestName
-                    + ProtocolMessages.DELIMITER + password + "\r\n";
-            System.out.print(message);
+        public void deploy(String[][] board) throws ServerUnavailableException {
+            String message = Protocol.deploy(board);
+            sendMessage(message);
         }
 
-        @Override
-        public void doBill(String guestName, String nights)
-                throws ServerUnavailableException {
-            int nightsInt = 0;
-            try {
-                nightsInt = Integer.parseInt(nights);
-            } catch (NumberFormatException e) {
-                System.out.println("Number of nights was not an integer!");
-            }
-            if(nightsInt > 0) {
-                String message = "> Received: " + ProtocolMessages.BILL + ProtocolMessages.DELIMITER + guestName + ProtocolMessages.DELIMITER + nights + "\r\n";
-                System.out.print(message);
-            } else {
-                System.out.println("nights is negative!");
-            }
+        public void move(Integer[] coordinate) throws ServerUnavailableException {
+            String message = Protocol.move(coordinate);
+            sendMessage(message);
         }
 
-        @Override
-        public void doPrint() throws ServerUnavailableException {
-            String message = "> Received: " + ProtocolMessages.PRINT + "\r\n";
-            System.out.print(message);
+        public void chat(String playername, String msg) throws ServerUnavailableException {
+            String message = Protocol.chat(playername, msg);
+            sendMessage(message);
         }
+
+        public void radarRequest(Integer[] coordinate) throws ServerUnavailableException {
+            String message = Protocol.radarRequest(coordinate);
+            sendMessage(message);
+        }
+
+        public void getPlayers() throws ServerUnavailableException {
+            String message = Protocol.getPlayers();
+            sendMessage(message);
+        }
+
+        public void choosePlayer(String[] players) throws ServerUnavailableException {
+            String message = Protocol.choosePlayers(players);
+            sendMessage(message);
+        }
+
 
         @Override
         public void sendExit() throws ServerUnavailableException {
@@ -267,12 +253,12 @@ import Protocol.Exceptions.ExitProgram;
         }
 
         /**
-         * This method starts a new HotelClient.
+         * This method starts a new Client.
          *
          * @param args
          */
         public static void main(String[] args) {
-            (new HotelClient()).start();
+            (new Client()).start();
         }
 
     }

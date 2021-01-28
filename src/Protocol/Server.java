@@ -93,4 +93,8 @@ public class Server implements Runnable {
     public String getShip(int x, int y) {
 
     }
+
+    public void succes(Object[] ){
+
+    }
 }
