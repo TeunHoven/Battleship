@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import Protocol.*;
+import Protocol.Exceptions.ExitProgram;
 
-    /**
+/**
      * Client for BattleShip
      */
     public class Client {

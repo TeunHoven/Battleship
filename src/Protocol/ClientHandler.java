@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import Protocol.*;
 
     /**
     * ClientHandler for the BattleShip client.
@@ -30,9 +31,8 @@ public class ClientHandler implements Runnable {
          *
          * @param sock The client socket
          * @param srv  The connected server
-         * @param name The name of this ClientHandler
          */
-        public ClientHandler(Socket sock, Server srv, String name) {
+        public ClientHandler(Socket sock, Server srv) {
             try {
                 in = new BufferedReader(
                         new InputStreamReader(sock.getInputStream()));
@@ -40,7 +40,6 @@ public class ClientHandler implements Runnable {
                         new OutputStreamWriter(sock.getOutputStream()));
                 this.sock = sock;
                 this.srv = srv;
-                this.name = name;
             } catch (IOException e) {
                 shutdown();
             }
