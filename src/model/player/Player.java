@@ -3,10 +3,10 @@ package model.player;
 import model.ship.Ship;
 
 public class Player {
-    String name;
-    Ship[] ships;
-    int points;
-    boolean isReady;
+    private String name;
+    private Ship[] ships;
+    private int points;
+    private boolean isReady;
 
     public Player(String name) {
         this.isReady = false;

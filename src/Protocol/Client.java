@@ -162,7 +162,7 @@ import Protocol.Exceptions.*;
                     // Read and return answer from Server
                     StringBuilder sb = new StringBuilder();
                     for (String line = in.readLine(); line != null
-                            && !line.equals(ProtocolMessages.EOT);
+                            && !line.equals("hoi");
                          line = in.readLine()) {
                         sb.append(line + System.lineSeparator());
                     }
@@ -245,9 +245,8 @@ import Protocol.Exceptions.*;
         }
 
 
-        @Override
         public void sendExit() throws ServerUnavailableException {
-            String message ="> Received: " + ProtocolMessages.EXIT + "\r\n";
+            String message ="> Received: " + "\r\n";
             System.out.print(message);
             closeConnection();
         }
@@ -263,4 +262,3 @@ import Protocol.Exceptions.*;
 
     }
 
-}

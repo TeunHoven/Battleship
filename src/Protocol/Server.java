@@ -7,7 +7,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static Protocol.Protocol.PORT;
 
@@ -20,8 +22,12 @@ public class Server implements Runnable {
     private boolean radarEnabled = false, lobbyEnabled = false;
 
     public Server() {
-        clients = new ArrayList<>();
+        clients = new ArrayList<ClientHandler>();
         gameState = gameState.SETUP;
+        while (ssock == null) {
+            setup();
+        }
+
     }
 
     private void setup() {
@@ -57,7 +63,7 @@ public class Server implements Runnable {
                     clients.add(handler);
                     if(clients.size() == 2) {
                         for(ClientHandler client : clients) {
-                            client.begin(clients, isRadarEnabled);
+                            //client.begin(clients, isRadarEnabled);
                         }
                         break;
                     }
@@ -75,26 +81,45 @@ public class Server implements Runnable {
         new Thread(server).start();
     }
 
-    public String join(ClientHandler client) {
-       if(client.getName() != null) {
-           if(client.isRadarEnabled()) {
-               radarEnabled = true;
-           }
-           if(client.isLobbyEnabled()) {
-               lobbyEnabled = true;
-           }
-
-           return Protocol.success();
-       } else {
-           return Protocol.fail("Name is not set!");
-       }
-    }
+   // public String join(ClientHandler client) {
+   //    if(client.getName() != null) {
+   //        if(client.isRadarEnabled()) {
+   //            radarEnabled = true;
+   //        }
+   //        if(client.isLobbyEnabled()) {
+   //            lobbyEnabled = true;
+   //        }
+    //
+     //      return Protocol.success();
+    //   } else {
+     //      return Protocol.fail("Name is not set!");
+     //  }
+   // }
 
     public String getShip(int x, int y) {
-
+        return null;
     }
 
-    public void succes(Object[] ){
-
+    public List<ClientHandler> getClients(){
+        return clients;
     }
+
+    public ServerSocket getServerSocket(){
+        return ssock;
+    }
+
+    private void addClient(ClientHandler client) {
+        clients.add(client);
+    }
+
+    synchronized void removeClient(String client) {
+        Set<ClientHandler> s = new HashSet<ClientHandler>();
+        for (ClientHandler handler : clients) {
+            if (!handler.getClientName().equals(client)) {
+                s.add(handler);
+            }
+        }
+        clients.retainAll(s);
+    }
+
 }
