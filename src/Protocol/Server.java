@@ -100,6 +100,12 @@ public class Server implements Runnable {
      */
     public String join(ClientHandler client) {
        if(client.getName() != null) {
+           for(ClientHandler c: clients) {
+               if(c != client && c.getName().equals(client.getName()))
+               {
+                   return Protocol.fail("Name is taken!");
+               }
+           }
            if(clients.size() == 1) {
                if(clients.get(0).isRadarEnabled() && client.isRadarEnabled()) {
                    radarEnabled = true;
