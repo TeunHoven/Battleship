@@ -22,14 +22,16 @@ import view.GameView;
         private BufferedWriter out;
 
         private boolean joined = false;
+        private String name;
 
         /**
          * Constructs a new Client. Initialises the view.
          */
-        public Client() {
+        public Client(String name) {
             serverSock = null;
             in = null;
             out = null;
+            this.name = name;
         }
 
         /**
@@ -276,6 +278,7 @@ import view.GameView;
                             break;
                         }
                     }
+                    System.out.println("Begin");
                     GameManager.setRadarEnabled(Boolean.parseBoolean(options[1]));
                 }
 
@@ -300,7 +303,8 @@ import view.GameView;
             }
         } else {
             try {
-                join("name", true, false);
+                join(name, true, false);
+                System.out.println("Joined");
             } catch (ServerUnavailableException e) {
                 e.printStackTrace();
             } catch (ProtocolException e) {

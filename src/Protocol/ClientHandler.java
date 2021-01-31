@@ -57,7 +57,7 @@ public class ClientHandler implements Runnable {
             }
         }
 
-        public void sendMessage(String msg) throws ServerUnavailableException {
+        public synchronized void sendMessage(String msg) throws ServerUnavailableException {
             if (out != null) {
                 try {
                     out.write(msg);
@@ -78,6 +78,7 @@ public class ClientHandler implements Runnable {
          * Continuously listens to client input and forwards the input to the
          * {@link #handleCommand(String)} method.
          */
+        @Override
         public void run() {
             String msg;
             try {
@@ -107,7 +108,7 @@ public class ClientHandler implements Runnable {
          * @param msg command from client
          * @throws IOException if an IO errors occur.
          */
-        private void handleCommand(String msg) throws IOException, ServerUnavailableException {
+        private synchronized void handleCommand(String msg) throws IOException, ServerUnavailableException {
             // To be implemented
             String command = msg.split(Protocol.CS)[0];
             String[] options = msg.split(Protocol.CS)[1].split(Protocol.CS);
@@ -115,27 +116,31 @@ public class ClientHandler implements Runnable {
             switch(command) {
                 case "J" -> {
                     name = options[0];
-                    String[] args = options[1].split(Protocol.AS);
-                    radarEnabled = Boolean.parseBoolean(args[1]);
+                    radarEnabled = Boolean.parseBoolean(options[1]);
+                    System.out.println("Joining");
                     sendMessage("" + server.join(this));
                 }
 
                 case "P" -> {
                     server.play();
+                    System.out.println("Starting with play");
                 }
 
                 case "D" -> {
                     String[][] board = Protocol.parse2DArray(options[0]);
                     sendMessage(server.setBoard(name, board));
+                    System.out.println("Set board");
                 }
 
                 case "T" -> {
+                    System.out.println("Next turn");
                     if(Integer.parseInt(options[0]) == numberOfPlayer) {
                         sendMessage(msg);
                     }
                 }
 
                 case "M" -> {
+                    System.out.println("move");
                     sendMessage(server.move(options[0], this));
                 }
             }

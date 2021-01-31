@@ -39,7 +39,7 @@ public class GameManager {
     private static boolean radarEnabled = true;
     private static boolean isOnline = true;
 
-    private static Client client;
+    private static Client client, computerClient;
 
     public static void setUp() {
         user = new HumanPlayer("Teun");
@@ -52,9 +52,14 @@ public class GameManager {
             ((ComputerPlayer) opponent).setUp();
         }
 
-        client = new Client();
+        client = new Client("Teun");
         client.start();
         new Thread(client).start();
+
+        computerClient = new Client("Computer200192");
+        computerClient.start();
+        new Thread(computerClient).start();
+
     }
 
     /**
