@@ -1,6 +1,7 @@
 package model;
 
 import Protocol.Client;
+import Protocol.Exceptions.ServerUnavailableException;
 import controller.Controller;
 import controller.GameState;
 import javafx.scene.paint.Color;
@@ -15,7 +16,7 @@ import view.GameView;
 import java.util.Arrays;
 
 public class GameManager {
-    private static GameState gameState = GameState.SETUP;
+    private static GameState gameState = GameState.JOINING;
 
     private static int round = 0;
     private static int turn = 0;
@@ -37,29 +38,40 @@ public class GameManager {
     private static String opponentsName = "";
 
     private static boolean radarEnabled = true;
-    private static boolean isOnline = true;
+    private static boolean isOnline = false;
 
     private static Client client, computerClient;
+    private static String name, ip, port;
 
-    public static void setUp() {
-        user = new HumanPlayer("Teun");
-        opponent = new ComputerPlayer();
+    public static void setUp() throws ServerUnavailableException {
+        user = new HumanPlayer(name);
+
+        if(!isOnline) {
+            opponent = new ComputerPlayer();
+        } else {
+            opponent = new ComputerPlayer();
+        }
 
         userBoard = new Board(user);
         enemyBoard = new Board(opponent);
 
-        if(opponent instanceof ComputerPlayer) {
-            ((ComputerPlayer) opponent).setUp();
+        if(isOnline) {
+            client = new Client(name, ip, port);
+            client.start();
+            new Thread(client).start();
+
+            computerClient = new Client("Computer200192", "127.0.0.1", "5000");
+            computerClient.start();
+            new Thread(computerClient).start();
         }
 
-        client = new Client("Teun");
-        client.start();
-        new Thread(client).start();
-
-        computerClient = new Client("Computer200192");
-        computerClient.start();
-        new Thread(computerClient).start();
-
+        if(opponent instanceof ComputerPlayer) {
+            if(isOnline) {
+                ((ComputerPlayer) opponent).setUp(computerClient);
+            } else {
+                ((ComputerPlayer) opponent).setUp();
+            }
+        }
     }
 
     /**
@@ -430,43 +442,51 @@ public class GameManager {
         return radarReadyOpponent;
     }
 
-    public static String[][] getBoardAsString() {
-        String[][] board = new String[Board.HEIGHT][Board.WIDTH];
+    public static String[][] getBoardAsString(Board board) {
+        String[][] boardString = new String[Board.HEIGHT][Board.WIDTH];
 
         for(int y=0; y<Board.HEIGHT; y++) {
             for(int x=0; x<Board.WIDTH; x++) {
-                Tile tile = userBoard.getTile(x, y);
+                Tile tile = board.getTile(x, y);
 
                 if(tile.hasShip()) {
                     Ship ship = tile.getShip();
                     String number = "" + ship.getName().toCharArray()[ship.getName().toCharArray().length-1];
 
                     if(ship instanceof PatrolBoatShip) {
-                        board[y][x] = "P" + number;
+                        boardString[y][x] = "P" + number;
                     }
 
                     if(ship instanceof SuperPatrolShip) {
-                        board[y][x] = "S" + number;
+                        boardString[y][x] = "S" + number;
                     }
 
                     if(ship instanceof DestroyerShip) {
-                        board[y][x] = "D" + number;
+                        boardString[y][x] = "D" + number;
                     }
 
                     if(ship instanceof BattleShip) {
-                        board[y][x] = "B" + number;
+                        boardString[y][x] = "B" + number;
                     }
 
                     if(ship instanceof CarrierShip) {
-                        board[y][x] = "C" + number;
+                        boardString[y][x] = "C" + number;
                     }
                 } else {
-                    board[y][x] = "";
+                    boardString[y][x] = "";
                 }
             }
         }
 
-        return board;
+        return boardString;
+    }
+
+    public static Client getUserClient() {
+        return client;
+    }
+
+    public static Client getComputerClient() {
+        return computerClient;
     }
 
     public static void setOpponent(String name) {
@@ -484,5 +504,22 @@ public class GameManager {
 
     public static boolean isOnline() {
         return isOnline;
+    }
+
+    public static void setOnline(boolean online) {
+        isOnline = online;
+        System.out.println(isOnline);
+    }
+
+    public static void setName(String _name) {
+        name = _name;
+    }
+
+    public static void setIP(String _ip) {
+        ip = _ip;
+    }
+
+    public static void setPort(String _port) {
+        port = _port;
     }
 }

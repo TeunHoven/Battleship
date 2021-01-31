@@ -22,16 +22,19 @@ import view.GameView;
         private BufferedWriter out;
 
         private boolean joined = false;
-        private String name;
+        private String name, ip;
+        private int port;
 
         /**
          * Constructs a new Client. Initialises the view.
          */
-        public Client(String name) {
+        public Client(String name, String ip, String port) {
             serverSock = null;
             in = null;
             out = null;
             this.name = name;
+            this.ip = ip;
+            this.port = Integer.parseInt(port);
         }
 
         /**
@@ -66,8 +69,7 @@ import view.GameView;
         public void createConnection() throws ExitProgram {
             clearConnection();
             while (serverSock == null) {
-                String host = "127.0.0.1";
-                int port = 5000;
+                String host = ip;
 
                 // try to open a Socket to the server
                 try {
@@ -262,8 +264,8 @@ import view.GameView;
         }
 
         private void handleCommand(String msg) {
-            String command = msg.split(Protocol.CS)[0];
-            String[] options = msg.split(Protocol.CS)[1].split(Protocol.CS);
+            String command = Protocol.parseCommands(msg)[0];
+            String[] options = msg.split(Protocol.CS);
 
             switch(command) {
                 case "F" -> {
@@ -272,18 +274,21 @@ import view.GameView;
 
                 case "B" -> {
                     GameManager.setGameState(GameState.SETUP);
-                    for(int i=0; i<2; i++) {
-                        if(!options[0].split(Protocol.AS)[i].equals("Teun")) {
-                            GameManager.setOpponent(options[i]);
-                            break;
-                        }
-                    }
+                    GameManager.setOpponent(options[2]);
                     System.out.println("Begin");
                     GameManager.setRadarEnabled(Boolean.parseBoolean(options[1]));
                 }
 
+                case "R" -> {
+
+                }
+
                 case "T" -> {
-                    GameManager.setGameState(GameState.USERROUND);
+                    if(name.toLowerCase().contains("computer")) {
+                        GameManager.setGameState(GameState.ENEMYROUND);
+                    } else {
+                        GameManager.setGameState(GameState.USERROUND);
+                    }
                     GameView.setEnemyPoints(Integer.parseInt(options[0]));
                 }
             }

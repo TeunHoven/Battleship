@@ -12,6 +12,7 @@ import model.GameManager;
 import model.board.Board;
 import model.board.Tile;
 import model.player.ComputerPlayer;
+import model.player.HumanPlayer;
 import model.player.Player;
 import model.ship.*;
 import view.GameView;
@@ -185,11 +186,14 @@ public class Controller {
     }
 
     // Gets called when mouse hovers a tile
-    public void onHover(Tile tile) {
+    public void onHover(Tile tile) throws ServerUnavailableException {
         selectedTile = tile;
 
         switch (GameManager.getGameState()) {
             case SETUP:
+                if(GameManager.isOnline() && GameManager.getOpponent() instanceof ComputerPlayer) {
+                    GameManager.getComputerClient().deploy(GameManager.getBoardAsString(GameManager.getOpponentBoard()));
+                }
                 setUpHover();
                 break;
 
@@ -198,9 +202,7 @@ public class Controller {
                 break;
 
             case ENEMYROUND:
-                if(!GameManager.isOnline()) {
-                    computerSmartTurn();
-                }
+                computerSmartTurn();
                 break;
 
             case END:
@@ -236,39 +238,35 @@ public class Controller {
     // All mouse events necessary for the USERROUND game state
     private void userRoundMouse(MouseEvent event) throws ServerUnavailableException {
         if(!tileOnUsersBoard()) {
-            if (GameManager.isOnline()) {
-                GameManager.getClient().move(new Integer[]{selectedTile.getXPos(), selectedTile.getYPos()});
+            if (!GameManager.getRadarUserReady() || !radarUsed) {
+                if (selectedTile.hasShip() && !selectedTile.isShot()) {
+                    shootTile(selectedTile, usersBoard);
+                    // PLAYER GETS ANOTHER TURN
+                    // RESET 30s TIMER
+               } else if (selectedTile.isShot()) {
+                    // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
+                    // PLAYER GETS ANOTHER TURN
+                    GameView.setMessage("Tile already shot!");
+               } else if (!selectedTile.hasShip()) {
+                    // NOTIFY THE PLAYER OF A "MISS EVENT"
+                    // END PLAYER TURN
+                    selectedTile.setIsShot(true);
+                    GameManager.nextTurn();
+                    GameView.setMessage("Tile has no ship!");
+                    opponentsBoard.setShot(selectedTile, false);
+               }
             } else {
-                if (!GameManager.getRadarUserReady() || !radarUsed) {
-                    if (selectedTile.hasShip() && !selectedTile.isShot()) {
-                        shootTile(selectedTile, usersBoard);
-                        // PLAYER GETS ANOTHER TURN
-                        // RESET 30s TIMER
-                    } else if (selectedTile.isShot()) {
-                        // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
-                        // PLAYER GETS ANOTHER TURN
-                        GameView.setMessage("Tile already shot!");
-                    } else if (!selectedTile.hasShip()) {
-                        // NOTIFY THE PLAYER OF A "MISS EVENT"
-                        // END PLAYER TURN
-                        selectedTile.setIsShot(true);
-                        GameManager.nextTurn();
-                        GameView.setMessage("Tile has no ship!");
-                        opponentsBoard.setShot(selectedTile, false);
-                    }
-                } else {
-                    Tile[] surroundedTiles = new Tile[9];
-                    for (int i = 0; i < 9; i++) { // To get all the surrounded tiles
-                        int x = selectedTile.getXPos() + surroundedLocations[i][0];
-                        int y = selectedTile.getYPos() + surroundedLocations[i][1];
+                Tile[] surroundedTiles = new Tile[9];
+                for (int i = 0; i < 9; i++) { // To get all the surrounded tiles
+                    int x = selectedTile.getXPos() + surroundedLocations[i][0];
+                    int y = selectedTile.getYPos() + surroundedLocations[i][1];
 
-                        surroundedTiles[i] = opponentsBoard.getTile(x, y);
-                    }
-                    opponentsBoard.setRadar(surroundedTiles);
-                    radarUsed = false;
-                    updateView();
-                    GameManager.radarUserUsed();
+                    surroundedTiles[i] = opponentsBoard.getTile(x, y);
                 }
+                opponentsBoard.setRadar(surroundedTiles);
+                radarUsed = false;
+                updateView();
+                GameManager.radarUserUsed();
             }
         }
 
@@ -546,9 +544,14 @@ public class Controller {
         usersBoard.getPlayer().setReady();
         GameView.setTopBox();
         GameManager.checkRound();
-        String[][] grid = GameManager.getBoardAsString();
+        String[][] grid = GameManager.getBoardAsString(GameManager.getUserBoard());
         updateView();
-        GameManager.getClient().deploy(grid);
+        if(GameManager.isOnline()) {
+            GameManager.getClient().deploy(grid);
+        } else {
+            GameManager.setGameState(GameState.SETUP);
+            GameManager.checkRound();
+        }
     }
 
     /**
@@ -614,7 +617,7 @@ public class Controller {
      * The basic AI implementation.
      * It only shoots at random tiles.
      */
-    public static void computerPlayerTurn() {
+    public static void computerPlayerTurn() throws ServerUnavailableException {
         Tile tile = shootRandomTile();
         while (tile != null) {
             tile = shootRandomTile();
@@ -631,7 +634,7 @@ public class Controller {
      * It starts with shooting at random tiles,
      * but when he hits a ship it will try to sink this ship by shooting neighbouring tiles.
      */
-    public void computerSmartTurn() {
+    public void computerSmartTurn() throws ServerUnavailableException {
         ComputerPlayer player = ((ComputerPlayer) opponentsBoard.getPlayer());
         Tile firstHitTile;
         boolean reset = false;
@@ -735,7 +738,7 @@ public class Controller {
         return tile;
     }
 
-    public static boolean isKill(Tile tile, Player player) {
+    public static boolean isKill(Tile tile, Player player) throws ServerUnavailableException {
         int pointsBeforeShot = player.getPoints();
         shootTile(tile, opponentsBoard);
         int pointsAfterShot = player.getPoints();
@@ -748,7 +751,15 @@ public class Controller {
      * @param tile - The Tile that to be shot
      * @param board - The board to which the shooting party belongs to
      */
-    public static void shootTile(Tile tile, Board board) {
+    public static void shootTile(Tile tile, Board board) throws ServerUnavailableException {
+            if(GameManager.isOnline()) {
+                if(board.getPlayer() instanceof HumanPlayer) {
+                    GameManager.getUserClient().move(new Integer[]{tile.getXPos(), tile.getYPos()});
+                } else {
+                    GameManager.getComputerClient().move(new Integer[]{tile.getXPos(), tile.getYPos()});
+                }
+            }
+
             Board otherBoard = board.getPlayer().getName().equals(usersBoard.getPlayer().getName()) ? opponentsBoard : usersBoard;
             board.getPlayer().addPoint();
             GameView.setMessage(board.getPlayer().getName() + " Hit a ship!");
@@ -792,5 +803,15 @@ public class Controller {
         }
 
         return false;
+    }
+
+    public static void createGame(boolean isOnline, String name, String ip, String port) {
+        GameManager.setOnline(isOnline);
+        if(!isOnline) {
+            GameManager.setGameState(GameState.SETUP);
+        }
+        GameManager.setName(name);
+        GameManager.setIP(ip);
+        GameManager.setPort(port);
     }
 }

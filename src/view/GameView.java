@@ -26,7 +26,7 @@ public class GameView {
     private Font myFont;
     private static Controller controller;
 
-    public GameView() {
+    public GameView() throws ServerUnavailableException {
         GameManager.setUp();
         Controller.setUp();
 

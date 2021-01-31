@@ -1,5 +1,7 @@
 package model.player;
 
+import Protocol.Client;
+import Protocol.Exceptions.ServerUnavailableException;
 import javafx.scene.paint.Color;
 import model.GameManager;
 import model.board.Board;
@@ -19,9 +21,19 @@ public class ComputerPlayer extends Player {
     private Board userBoard;
     private boolean isPlaced;
     private boolean hasTriedSameDirection = false;
+    private Client client;
 
     public ComputerPlayer() {
         super("Computer");
+    }
+
+    public void setUp(Client client) throws ServerUnavailableException {
+        this.board = GameManager.getOpponentBoard();
+        this.userBoard = GameManager.getUserBoard();
+        this.isPlaced = false;
+
+        setShips();
+        this.client = client;
     }
 
     public void setUp() {
@@ -324,8 +336,6 @@ public class ComputerPlayer extends Player {
             posXY[1] = posXY[1] + velocity[1];
         }
 
-        System.out.println("Shoot Neighbour Index X: " + posXY[0] + "; Index Y: " + posXY[1]);
-        System.out.println("Velocity X: " + velocity[0] + "; Velocity Y: " + velocity[1]);
         return userBoard.getTile(posXY[0], posXY[1]);
     }
 

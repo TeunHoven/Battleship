@@ -1,5 +1,6 @@
 package model.board;
 
+import Protocol.Exceptions.ServerUnavailableException;
 import controller.Controller;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -73,7 +74,13 @@ public class Board extends Parent {
 
                 // Creates the mouse events
                 tile.addEventFilter(MouseEvent.MOUSE_CLICKED, Controller.sharedInstance.mouseEvent);
-                tile.hoverProperty().addListener((observable, oldValue, newValue) -> Controller.sharedInstance.onHover(tile));
+                tile.hoverProperty().addListener((observable, oldValue, newValue) -> {
+                    try {
+                        Controller.sharedInstance.onHover(tile);
+                    } catch (ServerUnavailableException e) {
+                        e.printStackTrace();
+                    }
+                });
                 tiles.add(tile);
                 row.getChildren().add(tile);
             }
@@ -248,7 +255,13 @@ public class Board extends Parent {
                 rect.setTranslateY(y+10);
 
                 rect.addEventFilter(MouseEvent.MOUSE_CLICKED, Controller.sharedInstance.mouseEvent);
-                rect.hoverProperty().addListener((observable, oldValue, newValue) -> Controller.sharedInstance.onHover(t));
+                rect.hoverProperty().addListener((observable, oldValue, newValue) -> {
+                    try {
+                        Controller.sharedInstance.onHover(t);
+                    } catch (ServerUnavailableException e) {
+                        e.printStackTrace();
+                    }
+                });
 
                 getChildren().add(rect);
             }

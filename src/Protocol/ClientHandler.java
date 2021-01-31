@@ -110,25 +110,25 @@ public class ClientHandler implements Runnable {
          */
         private synchronized void handleCommand(String msg) throws IOException, ServerUnavailableException {
             // To be implemented
-            String command = msg.split(Protocol.CS)[0];
-            String[] options = msg.split(Protocol.CS)[1].split(Protocol.CS);
+            String command = Protocol.parseCommands(msg)[0];
+            String[] options = Protocol.parseCommands(msg);
 
             switch(command) {
                 case "J" -> {
-                    name = options[0];
-                    radarEnabled = Boolean.parseBoolean(options[1]);
+                    name = options[1];
+                    radarEnabled = Boolean.parseBoolean(options[2]);
                     System.out.println("Joining");
                     sendMessage("" + server.join(this));
                 }
 
                 case "P" -> {
                     server.play();
-                    System.out.println("Starting with play");
+                    System.out.println("Starting with play!!!!");
                 }
 
                 case "D" -> {
                     String[][] board = Protocol.parse2DArray(options[0]);
-                    sendMessage(server.setBoard(name, board));
+                    server.setBoard(name, board);
                     System.out.println("Set board");
                 }
 
@@ -163,11 +163,13 @@ public class ClientHandler implements Runnable {
             }
 
             radarEnabled = isRadarEnabled;
+            String message = Protocol.begin(names, isRadarEnabled());
+            System.out.println(message);
             sendMessage(Protocol.begin(names, isRadarEnabled()));
         }
 
-        public void turn(String name, int score) {
-
+        public void turn(int score) throws ServerUnavailableException {
+            sendMessage(Protocol.turn(1, new Integer[]{score}));
         }
 
         /**

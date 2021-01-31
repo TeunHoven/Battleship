@@ -19,19 +19,21 @@ public class Server implements Runnable {
     private ServerSocket ssock;
     private List<ClientHandler> clients;
     private Map<String, String[][]> boards;
+    private boolean firstPlayerReady = false;
     private Map<String, Integer> scores;
     private GameState gameState;
 
     private int numberOfPlayers = 0;
 
     private int turn = 0;
+    private ClientHandler currClient;
 
     private boolean radarEnabled = false, lobbyEnabled = false;
     private boolean bothReady = false;
 
     public Server() {
         clients = new ArrayList<>();
-        gameState = gameState.SETUP;
+        gameState = gameState.JOINING;
         boards = new HashMap<>();
         scores = new HashMap<>();
     }
@@ -142,9 +144,9 @@ public class Server implements Runnable {
      * Checks whether two players have joined and acts accordingly
      * @throws ServerUnavailableException when server is unavailable
      */
-    public void play() throws ServerUnavailableException {
+    public synchronized void play() throws ServerUnavailableException {
         if(clients.size() == 2) {
-            String[] name = new String[2];
+            System.out.println(clients.size());
             for (ClientHandler client : clients) {
                 client.begin(clients, isRadarEnabled());
             }
@@ -156,27 +158,33 @@ public class Server implements Runnable {
      * @param board two-dimensional array with all the information from the users board
      * @return a sign that the match can start
      */
-    public String setBoard(String name, String[][] board) {
+    public void setBoard(String name, String[][] board) throws ServerUnavailableException {
         boards.put(name, board);
-        return Protocol.readyToPlay();
+        if(firstPlayerReady) {
+            turn();
+            currClient = clients.get(0);
+            sendMessageToAllClients(Protocol.readyToPlay());
+            System.out.println("Board setup done");
+        }
+        firstPlayerReady = true;
     }
 
     /**
-     * @param client that finished the turn
      * @return string whose turn it is
      */
-    public void turn(ClientHandler client) throws ServerUnavailableException {
+    public void turn() throws ServerUnavailableException {
         if(hasWinner() != null) {
             sendMessageToAllClients(Protocol.end(hasWinner().getNumberOfPlayer()));
         }
+
+        currClient.turn(scores.get(currClient.getName()));
 
         if(turn == 0) {
             turn = 1;
         } else {
             turn = 0;
         }
-        ClientHandler other = (clients.get(0).getName().equals(client.getName())) ? clients.get(1) : clients.get(0);
-        sendMessageToAllClients(Protocol.turn(turn+1, new Integer[]{scores.get(other)}));
+        currClient = clients.get(turn);
     }
 
     private ClientHandler hasWinner() {
