@@ -196,6 +196,6 @@ public class ClientHandler implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            server.removeClient(this);
+            server.removeClient(getName());
         }
 }

@@ -78,6 +78,11 @@ public class Server implements Runnable {
         new Thread(server).start();
     }
 
+    /**
+     * Sends message
+     * @param message
+     * @throws ServerUnavailableException
+     */
     private void sendMessageToAllClients(String message) throws ServerUnavailableException {
         for(ClientHandler c: clients) {
             c.sendMessage(message);
@@ -101,7 +106,7 @@ public class Server implements Runnable {
 
            return Protocol.success();
        } else {
-           removeClient(client);
+           removeClient(client.getName());
            return Protocol.fail("Name is not set!");
        }
     }
@@ -159,7 +164,7 @@ public class Server implements Runnable {
      */
     public void turn(ClientHandler client) throws ServerUnavailableException {
         if(hasWinner() != null) {
-            sendMessageToAllClients(Protocol.end());
+            sendMessageToAllClients(Protocol.end(hasWinner().getNumberOfPlayer()));
         }
 
         if(turn == 0) {
@@ -171,10 +176,10 @@ public class Server implements Runnable {
         sendMessageToAllClients(Protocol.turn(turn+1, new Integer[]{scores.get(other)}));
     }
 
-    private String hasWinner() {
+    private ClientHandler hasWinner() {
         for(ClientHandler c: clients) {
             if(scores.get(c.getName()) == 91) {
-                return c.getName();
+                return c;
             }
         }
 
