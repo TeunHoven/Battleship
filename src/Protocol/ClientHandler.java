@@ -110,12 +110,13 @@ public class ClientHandler implements Runnable {
         private void handleCommand(String msg) throws IOException, ServerUnavailableException {
             // To be implemented
             String command = msg.split(Protocol.CS)[0];
-            String[] options = msg.split(Protocol.CS)[1].split(Protocol.AS);
+            String[] options = msg.split(Protocol.CS)[1].split(Protocol.CS);
 
             switch(command) {
                 case "J" -> {
                     name = options[0];
-                    radarEnabled = Boolean.parseBoolean(options[1]);
+                    String[] args = options[1].split(Protocol.AS);
+                    radarEnabled = Boolean.parseBoolean(args[1]);
                     sendMessage("" + server.join(this));
                 }
 
@@ -129,12 +130,13 @@ public class ClientHandler implements Runnable {
                 }
 
                 case "T" -> {
-
+                    if(Integer.parseInt(options[0]) == numberOfPlayer) {
+                        sendMessage(msg);
+                    }
                 }
 
                 case "M" -> {
                     sendMessage(server.move(options[0], this));
-                    server.turn(this);
                 }
             }
         }

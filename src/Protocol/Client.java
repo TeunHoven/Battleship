@@ -8,15 +8,20 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import Protocol.Exceptions.*;
+import controller.GameState;
+import model.GameManager;
+import view.GameView;
 
 /**
      * Client for BattleShip
      */
-    public class Client {
+    public class Client implements Runnable {
 
         private Socket serverSock;
         private BufferedReader in;
         private BufferedWriter out;
+
+        private boolean joined = false;
 
         /**
          * Constructs a new Client. Initialises the view.
@@ -207,6 +212,9 @@ import Protocol.Exceptions.*;
             } else {
                 // TELL CLIENT THAT JOIN IS SUCCESFUL EN IDK!?
             }
+
+            joined = true;
+            play(2);
         }
 
         public void play(int gameSize) throws ServerUnavailableException{
@@ -251,14 +259,54 @@ import Protocol.Exceptions.*;
             closeConnection();
         }
 
-        /**
-         * This method starts a new Client.
-         *
-         * @param args
-         */
-        public static void main(String[] args) {
-            (new Client()).start();
+        private void handleCommand(String msg) {
+            String command = msg.split(Protocol.CS)[0];
+            String[] options = msg.split(Protocol.CS)[1].split(Protocol.CS);
+
+            switch(command) {
+                case "F" -> {
+                    System.out.println(options[0]);
+                }
+
+                case "B" -> {
+                    GameManager.setGameState(GameState.SETUP);
+                    for(int i=0; i<2; i++) {
+                        if(!options[0].split(Protocol.AS)[i].equals("Teun")) {
+                            GameManager.setOpponent(options[i]);
+                            break;
+                        }
+                    }
+                    GameManager.setRadarEnabled(Boolean.parseBoolean(options[1]));
+                }
+
+                case "T" -> {
+                    GameManager.setGameState(GameState.USERROUND);
+                    GameView.setEnemyPoints(Integer.parseInt(options[0]));
+                }
+            }
         }
 
+    @Override
+    public void run() {
+        if(joined) {
+            String message = null;
+            try {
+                message = readLineFromServer();
+            } catch (ServerUnavailableException e) {
+                e.printStackTrace();
+            }
+            while (message != null) {
+                handleCommand(message);
+            }
+        } else {
+            try {
+                join("name", true, false);
+            } catch (ServerUnavailableException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            }
+        }
     }
+}
 

@@ -1,5 +1,6 @@
 package controller;
 
+import Protocol.Exceptions.ServerUnavailableException;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -75,7 +76,11 @@ public class Controller {
                     break;
 
                 case USERROUND:
-                    userRoundMouse(mouseEvent);
+                    try {
+                        userRoundMouse(mouseEvent);
+                    } catch (ServerUnavailableException e) {
+                        e.printStackTrace();
+                    }
                     break;
 
                 case ENEMYROUND:
@@ -193,7 +198,9 @@ public class Controller {
                 break;
 
             case ENEMYROUND:
-                computerSmartTurn();
+                if(!GameManager.isOnline()) {
+                    computerSmartTurn();
+                }
                 break;
 
             case END:
@@ -227,37 +234,41 @@ public class Controller {
     }
 
     // All mouse events necessary for the USERROUND game state
-    private void userRoundMouse(MouseEvent event) {
+    private void userRoundMouse(MouseEvent event) throws ServerUnavailableException {
         if(!tileOnUsersBoard()) {
-            if(!GameManager.getRadarUserReady() || !radarUsed) {
-                if (selectedTile.hasShip() && !selectedTile.isShot()) {
-                    shootTile(selectedTile, usersBoard);
-                    // PLAYER GETS ANOTHER TURN
-                    // RESET 30s TIMER
-                } else if (selectedTile.isShot()) {
-                    // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
-                    // PLAYER GETS ANOTHER TURN
-                    GameView.setMessage("Tile already shot!");
-                } else if (!selectedTile.hasShip()) {
-                    // NOTIFY THE PLAYER OF A "MISS EVENT"
-                    // END PLAYER TURN
-                    selectedTile.setIsShot(true);
-                    GameManager.nextTurn();
-                    GameView.setMessage("Tile has no ship!");
-                    opponentsBoard.setShot(selectedTile, false);
-                }
+            if (GameManager.isOnline()) {
+                GameManager.getClient().move(new Integer[]{selectedTile.getXPos(), selectedTile.getYPos()});
             } else {
-                Tile[] surroundedTiles = new Tile[9];
-                for(int i=0; i<9; i++) { // To get all the surrounded tiles
-                    int x = selectedTile.getXPos()+surroundedLocations[i][0];
-                    int y = selectedTile.getYPos()+surroundedLocations[i][1];
+                if (!GameManager.getRadarUserReady() || !radarUsed) {
+                    if (selectedTile.hasShip() && !selectedTile.isShot()) {
+                        shootTile(selectedTile, usersBoard);
+                        // PLAYER GETS ANOTHER TURN
+                        // RESET 30s TIMER
+                    } else if (selectedTile.isShot()) {
+                        // NOTIFY PLAYER THAT THE TILE IS ALREADY SHOT
+                        // PLAYER GETS ANOTHER TURN
+                        GameView.setMessage("Tile already shot!");
+                    } else if (!selectedTile.hasShip()) {
+                        // NOTIFY THE PLAYER OF A "MISS EVENT"
+                        // END PLAYER TURN
+                        selectedTile.setIsShot(true);
+                        GameManager.nextTurn();
+                        GameView.setMessage("Tile has no ship!");
+                        opponentsBoard.setShot(selectedTile, false);
+                    }
+                } else {
+                    Tile[] surroundedTiles = new Tile[9];
+                    for (int i = 0; i < 9; i++) { // To get all the surrounded tiles
+                        int x = selectedTile.getXPos() + surroundedLocations[i][0];
+                        int y = selectedTile.getYPos() + surroundedLocations[i][1];
 
-                    surroundedTiles[i] = opponentsBoard.getTile(x, y);
+                        surroundedTiles[i] = opponentsBoard.getTile(x, y);
+                    }
+                    opponentsBoard.setRadar(surroundedTiles);
+                    radarUsed = false;
+                    updateView();
+                    GameManager.radarUserUsed();
                 }
-                opponentsBoard.setRadar(surroundedTiles);
-                radarUsed = false;
-                updateView();
-                GameManager.radarUserUsed();
             }
         }
 
@@ -531,12 +542,13 @@ public class Controller {
             return false;
     }
 
-    public void readyButtonClicked() {
+    public void readyButtonClicked() throws ServerUnavailableException {
         usersBoard.getPlayer().setReady();
         GameView.setTopBox();
         GameManager.checkRound();
         String[][] grid = GameManager.getBoardAsString();
         updateView();
+        GameManager.getClient().deploy(grid);
     }
 
     /**

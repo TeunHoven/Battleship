@@ -12,6 +12,9 @@ import java.util.*;
 
 import static Protocol.Protocol.PORT;
 
+/**
+ * Server for the Battleship project
+ */
 public class Server implements Runnable {
     private ServerSocket ssock;
     private List<ClientHandler> clients;
@@ -79,9 +82,9 @@ public class Server implements Runnable {
     }
 
     /**
-     * Sends message
-     * @param message
-     * @throws ServerUnavailableException
+     * Sends message to all clients
+     * @param message message that gets send to all clients
+     * @throws ServerUnavailableException when the server is unavailable
      */
     private void sendMessageToAllClients(String message) throws ServerUnavailableException {
         for(ClientHandler c: clients) {

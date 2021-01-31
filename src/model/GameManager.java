@@ -1,5 +1,6 @@
 package model;
 
+import Protocol.Client;
 import controller.Controller;
 import controller.GameState;
 import javafx.scene.paint.Color;
@@ -33,6 +34,12 @@ public class GameManager {
     private static Player user, opponent;
     private static Board userBoard, enemyBoard;
     private static String winner = "NONE";
+    private static String opponentsName = "";
+
+    private static boolean radarEnabled = true;
+    private static boolean isOnline = true;
+
+    private static Client client;
 
     public static void setUp() {
         user = new HumanPlayer("Teun");
@@ -44,6 +51,10 @@ public class GameManager {
         if(opponent instanceof ComputerPlayer) {
             ((ComputerPlayer) opponent).setUp();
         }
+
+        client = new Client();
+        client.start();
+        new Thread(client).start();
     }
 
     /**
@@ -451,5 +462,22 @@ public class GameManager {
         }
 
         return board;
+    }
+
+    public static void setOpponent(String name) {
+        opponentsName = name;
+        GameView.setEnemyLabel();
+    }
+
+    public static void setRadarEnabled(boolean enabled) {
+        radarEnabled = enabled;
+    }
+
+    public static Client getClient() {
+        return client;
+    }
+
+    public static boolean isOnline() {
+        return isOnline;
     }
 }

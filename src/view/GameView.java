@@ -1,5 +1,6 @@
 package view;
 
+import Protocol.Exceptions.ServerUnavailableException;
 import controller.Controller;
 import controller.GameState;
 import javafx.geometry.Pos;
@@ -85,7 +86,13 @@ public class GameView {
 
         readyButton = new Button("Ready");
         readyButton.setFont(new Font(12));
-        readyButton.setOnAction(e -> controller.readyButtonClicked());
+        readyButton.setOnAction(e -> {
+            try {
+                controller.readyButtonClicked();
+            } catch (ServerUnavailableException serverUnavailableException) {
+                serverUnavailableException.printStackTrace();
+            }
+        });
         readyButton.setDisable(true);
 
         VBox userInfo = new VBox(0, currShip, randomizeButton, readyButton);
@@ -123,6 +130,10 @@ public class GameView {
 
     public static void setRound(String round) {
         roundLabel.setText(round);
+    }
+
+    public static void setEnemyLabel() {
+        enemyLabel.setText(GameManager.getOpponent().getName() + "'s Fleet");
     }
 
     public static void setTopBox() {
