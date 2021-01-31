@@ -84,6 +84,7 @@ public class BattleshipMainView extends Application{
             HBox top = new HBox(type, online);
 
             root.setTop(top);
+            root.setCenter(nameBox);
         }
 
         Button join = new Button("Create");

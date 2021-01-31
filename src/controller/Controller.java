@@ -50,15 +50,12 @@ public class Controller {
                     break;
 
                 case USERROUND:
-                    userRoundKeys(keyEvent);
                     break;
 
                 case ENEMYROUND:
-                    enemyRoundKeys(keyEvent);
                     break;
 
                 case END:
-                    endRoundKeys(keyEvent);
                     break;
 
                 default:
@@ -85,11 +82,9 @@ public class Controller {
                     break;
 
                 case ENEMYROUND:
-                    enemyRoundMouse(mouseEvent);
                     break;
 
                 case END:
-                    endRoundMouse(mouseEvent);
                     break;
 
                 default:
@@ -206,7 +201,6 @@ public class Controller {
                 break;
 
             case END:
-                endRoundHover();
                 break;
 
             default:
@@ -235,7 +229,11 @@ public class Controller {
         }
     }
 
-    // All mouse events necessary for the USERROUND game state
+    /**
+     *
+     * @param event the mouse event that the user does
+     * @throws ServerUnavailableException when the server is unavailable
+     */
     private void userRoundMouse(MouseEvent event) throws ServerUnavailableException {
         if(!tileOnUsersBoard()) {
             if (!GameManager.getRadarUserReady() || !radarUsed) {
@@ -273,21 +271,14 @@ public class Controller {
         updateView();
     }
 
-    // All mouse events necessary for the ENEMYROUND game state
-    private void enemyRoundMouse(MouseEvent event) {
-
-    }
-
-    // All mouse events necessary for the END game state
-    private void endRoundMouse(MouseEvent event) {
-
-    }
-
     ////////////////////////////////////////////////////////
     ///////////////// KEY CONTROLLER //////////////////////
     //////////////////////////////////////////////////////
 
-    // All keys events necessary for the SETUP game state
+    /**
+     * Gets called when it is the setup round and the user presses a key
+     * @param event keyEvent which has the input of the user
+     */
     private void setUpKeys(KeyEvent event) {
         int shipsLeftover = 0;
 
@@ -346,26 +337,13 @@ public class Controller {
         updateView();
     }
 
-    // All keys events necessary for the USERROUND game state
-    private void userRoundKeys(KeyEvent event) {
-
-    }
-
-    // All keys events necessary for the ENEMYROUND game state
-    private void enemyRoundKeys(KeyEvent event) {
-
-    }
-
-    // All keys events necessary for the END game state
-    private void endRoundKeys(KeyEvent event) {
-
-    }
-
     ////////////////////////////////////////////////////////
     ///////////////// HOVER CONTROLLER ////////////////////
     //////////////////////////////////////////////////////
 
-    // All hover events necessary for the SETUP game state
+    /**
+     * Gets called when it is the setup round and the user hovers on a Tile
+     */
     private void setUpHover() {
         if (tileOnUsersBoard()) {
             if (selectedShip != null) {
@@ -386,7 +364,9 @@ public class Controller {
         }
     }
 
-    // All hover events necessary for the USERROUND game state
+    /**
+     * Gets called when it is the users round and the user hovers on a Tile
+     */
     private void userRoundHover() {
         if(!tileOnUsersBoard()) {
             if(!GameManager.getRadarUserReady() || !radarUsed) {
@@ -410,16 +390,10 @@ public class Controller {
         updateView();
     }
 
-    // All hover events necessary for the ENEMYROUND game state
-    private void enemyRoundHover() {
-
-    }
-
-    // All hover events necessary for the END game state
-    private void endRoundHover() {
-
-    }
-
+    /**
+     * Checks whether the placement of the ship is valid while the user places ships manually
+     * @return true if the placement is valid
+     */
     private boolean isValidPlacement() {
         selectedTiles = usersBoard.getTileNeighboursHorizontal(selectedTile, selectedShip.getShipLength());
         if (Arrays.asList(selectedTiles).contains(null)) {
@@ -441,6 +415,12 @@ public class Controller {
         return true;
     }
 
+    /**
+     * Checks whether the placement of the ship is valid while using the random button
+     * @param x X-index of the board
+     * @param y Y-index of the board
+     * @return 0 when placement can be horizontal or vertical; 1 when placement can only be horizontal; 2 when placement can only be vertical; 3 when placement is not possible
+     */
     private int isValidPlacement(int x, int y) {
         usersBoard.setHorizontal(true);
 
@@ -460,6 +440,10 @@ public class Controller {
         }
     }
 
+    /**
+     * Calculates how many ships the user can still place
+     * @return int that tells you how many ships the user can place
+     */
     private int getShipsLeftOver() {
         int shipsLeftOver = 0;
 
@@ -540,6 +524,10 @@ public class Controller {
             return false;
     }
 
+    /**
+     * Is called when the ready button is clicked
+     * @throws ServerUnavailableException when the server is not available
+     */
     public void readyButtonClicked() throws ServerUnavailableException {
         usersBoard.getPlayer().setReady();
         GameView.setTopBox();
@@ -778,7 +766,7 @@ public class Controller {
     }
 
     /**
-     * ????????????????????
+     * Gets called when the radar button is clicked and makes sure the user knows
      */
     public void radarButtonClicked() {
         radarUsed = !radarUsed;
@@ -805,6 +793,12 @@ public class Controller {
         return false;
     }
 
+    /**
+     * @param isOnline whether the match is online
+     * @param name the name of the user
+     * @param ip the ip address the user wants to connect to
+     * @param port the port for which the client needs to connect to
+     */
     public static void createGame(boolean isOnline, String name, String ip, String port) {
         GameManager.setOnline(isOnline);
         if(!isOnline) {

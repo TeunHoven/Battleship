@@ -35,6 +35,9 @@ public class GameView {
         setView();
     }
 
+    /**
+     * Sets the view of the main game view
+     */
     private void setView() {
         root = new BorderPane();
         root.setPrefSize(1280, 720);
@@ -108,34 +111,58 @@ public class GameView {
         scene.setOnKeyPressed(controller.keyEvent);
     }
 
+    /**
+     * @return main scene of the view
+     */
     public Scene getScene() {
         return scene;
     }
 
+    /**
+     * Changes a label text so that the correct ship is shown
+     */
     public static void setSelectedShip(String name) {
         currShip.setText("Ship: " + name);
     }
 
+    /**
+     * Changes a label text so that the correct points of the user are shown
+     */
     public static void setUserPoints(int points) {
         userPoints.setText("Points: " + points);
     }
 
+    /**
+     * Changes a label text so that the correct points of the enemy are shown
+     */
     public static void setEnemyPoints(int points) {
         enemyPoints.setText("Points: " + points);
     }
 
+    /**
+     * Changes a label text so that a message is shown to the user
+     */
     public static void setMessage(String message) {
         messageLabel.setText(message);
     }
 
+    /**
+     * Changes a label text so that the correct round is shown
+     */
     public static void setRound(String round) {
         roundLabel.setText(round);
     }
 
+    /**
+     * Changes a the fleet text so that the name of the opponent is shown
+     */
     public static void setEnemyLabel() {
         enemyLabel.setText(GameManager.getOpponent().getName() + "'s Fleet");
     }
 
+    /**
+     * Changes the top of the screen so that the radar can be used
+     */
     public static void setTopBox() {
         Button radar = new Button("Radar");
         radar.setOnAction(e -> controller.radarButtonClicked());
