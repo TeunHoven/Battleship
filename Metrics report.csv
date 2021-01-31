@@ -1,0 +1,23 @@
+Lines of code metrics,Sun, 31 Jan 2021 20:25:16 CET
+Package,LOC,LOC(rec),LOCp,LOCp(rec),LOCt,LOCt(rec)
+"",23,3.393,23,3.393,0,0
+"Protocol",1.052,1.073,1.052,1.073,0,0
+"Protocol.Exceptions",21,21,21,21,0,0
+"controller",701,701,701,701,0,0
+"model",452,1.348,452,1.348,0,0
+"model.board",330,330,330,330,0,0
+"model.player",441,441,441,441,0,0
+"model.ship",125,125,125,125,0,0
+"test",35,35,35,35,0,0
+"view",213,213,213,213,0,0
+
+Module,L(Groovy),L(HTML),L(J),L(KT),L(XML),LOC,LOCp,LOCt,NCLOC,NCLOCp,NCLOCt
+"BattleshipProject",0,0,3.370,0,0,3.395,3.393,0,2.612,2.612,0
+
+FileType,LOC,NCLOC
+"Java",3.370,2.612
+"Text",25,n/a
+
+Project,L(Groovy),L(HTML),L(J),L(KT),L(XML),LOC,LOCp,LOCt,NCLOC,NCLOCp,NCLOCt
+"project",0,0,3.370,0,0,3.395,3.393,0,2.612,2.612,0
+
