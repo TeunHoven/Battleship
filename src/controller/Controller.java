@@ -535,6 +535,7 @@ public class Controller {
         usersBoard.getPlayer().setReady();
         GameView.setTopBox();
         GameManager.checkRound();
+        String[][] grid = GameManager.getBoardAsString();
         updateView();
     }
 

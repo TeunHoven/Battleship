@@ -1,33 +1,36 @@
 package Protocol;
 
+import Protocol.Exceptions.ServerUnavailableException;
 import controller.GameState;
+import model.board.Board;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static Protocol.Protocol.PORT;
 
 public class Server implements Runnable {
     private ServerSocket ssock;
     private List<ClientHandler> clients;
-    private int next_client_no;
+    private Map<String, String[][]> boards;
+    private Map<String, Integer> scores;
     private GameState gameState;
 
+    private int numberOfPlayers = 0;
+
+    private int turn = 0;
+
     private boolean radarEnabled = false, lobbyEnabled = false;
+    private boolean bothReady = false;
 
     public Server() {
-        clients = new ArrayList<ClientHandler>();
+        clients = new ArrayList<>();
         gameState = gameState.SETUP;
-        while (ssock == null) {
-            setup();
-        }
-
+        boards = new HashMap<>();
+        scores = new HashMap<>();
     }
 
     private void setup() {
@@ -58,15 +61,9 @@ public class Server implements Runnable {
                 while (true) {
                     Socket sock = ssock.accept();
                     ClientHandler handler =
-                            new ClientHandler(sock, this);
+                            new ClientHandler(sock, this, ++numberOfPlayers);
                     new Thread(handler).start();
                     clients.add(handler);
-                    if(clients.size() == 2) {
-                        for(ClientHandler client : clients) {
-                            //client.begin(clients, isRadarEnabled);
-                        }
-                        break;
-                    }
                 }
             } catch (IOException e) {
                 System.out.println("A server IO error occurred: "
@@ -81,45 +78,154 @@ public class Server implements Runnable {
         new Thread(server).start();
     }
 
-   // public String join(ClientHandler client) {
-   //    if(client.getName() != null) {
-   //        if(client.isRadarEnabled()) {
-   //            radarEnabled = true;
-   //        }
-   //        if(client.isLobbyEnabled()) {
-   //            lobbyEnabled = true;
-   //        }
-    //
-     //      return Protocol.success();
-    //   } else {
-     //      return Protocol.fail("Name is not set!");
-     //  }
-   // }
+    private void sendMessageToAllClients(String message) throws ServerUnavailableException {
+        for(ClientHandler c: clients) {
+            c.sendMessage(message);
+        }
+    }
 
-    public String getShip(int x, int y) {
+    /**
+     * @param client client that wants to ask to join the match
+     * @return message if joining the server is succeeded;
+     */
+    public String join(ClientHandler client) {
+       if(client.getName() != null) {
+           if(clients.size() == 1) {
+               if(clients.get(0).isRadarEnabled() && client.isRadarEnabled()) {
+                   radarEnabled = true;
+               }
+               bothReady = true;
+           }
+
+           scores.put(client.getName(), 0);
+
+           return Protocol.success();
+       } else {
+           removeClient(client);
+           return Protocol.fail("Name is not set!");
+       }
+    }
+
+    /**
+     * @return true if radar is enabled in this match
+     */
+    public boolean isRadarEnabled() {
+        return radarEnabled;
+    }
+
+    /**
+     * @return true if lobby is enabled on this server
+     */
+    public boolean isLobbyEnabled() {
+        return lobbyEnabled;
+    }
+
+    /**
+     * @param x X-index of the board
+     * @param y Y-index of the board
+     * @param user name of the user that you want to get a tile of
+     * @return string with what is on the tile
+     */
+    public String getTile(int x, int y, String user) {
+        return boards.get(user)[y][x];
+    }
+
+    /**
+     * Checks whether two players have joined and acts accordingly
+     * @throws ServerUnavailableException when server is unavailable
+     */
+    public void play() throws ServerUnavailableException {
+        if(clients.size() == 2) {
+            String[] name = new String[2];
+            for (ClientHandler client : clients) {
+                client.begin(clients, isRadarEnabled());
+            }
+        }
+    }
+
+    /**
+     * @param name name of the client from whom the board is
+     * @param board two-dimensional array with all the information from the users board
+     * @return a sign that the match can start
+     */
+    public String setBoard(String name, String[][] board) {
+        boards.put(name, board);
+        return Protocol.readyToPlay();
+    }
+
+    /**
+     * @param client that finished the turn
+     * @return string whose turn it is
+     */
+    public void turn(ClientHandler client) throws ServerUnavailableException {
+        if(hasWinner() != null) {
+            sendMessageToAllClients(Protocol.end());
+        }
+
+        if(turn == 0) {
+            turn = 1;
+        } else {
+            turn = 0;
+        }
+        ClientHandler other = (clients.get(0).getName().equals(client.getName())) ? clients.get(1) : clients.get(0);
+        sendMessageToAllClients(Protocol.turn(turn+1, new Integer[]{scores.get(other)}));
+    }
+
+    private String hasWinner() {
+        for(ClientHandler c: clients) {
+            if(scores.get(c.getName()) == 91) {
+                return c.getName();
+            }
+        }
+
         return null;
     }
 
-    public List<ClientHandler> getClients(){
-        return clients;
+    /**
+     *
+     * @param coordinates the x- and y-coordinates that the client shoots
+     * @param client the client which shoots
+     * @return string with the value of the score
+     */
+    public String move(String coordinates, ClientHandler client) {
+        String[] args = coordinates.split(Protocol.AS);
+        int x = (Integer.parseInt(args[0]));
+        int y = (Integer.parseInt(args[1]));
+        String[][] board = boards.get(client.getName());
+        String tile = board[y][x];
+
+        if(x < 0 || x >= Board.WIDTH || y < 0 || y >= Board.HEIGHT) {
+            return Protocol.hit(-1, 0, 0, new Integer[]{0, 0});
+        }
+
+        if(!tile.isEmpty()) {
+            for(int i=0; i<Board.HEIGHT; i++) {
+                for(int j=0; j<Board.WIDTH; j++) {
+                    if((i != y && j != x) && board[i][j].equals(tile)) {
+                        board[y][x] = "X";
+                        scores.put(client.getName(), scores.get(client.getName())+1);
+                        return Protocol.hit(1, 0, 0, new Integer[]{0, 0});
+                    }
+                }
+            }
+            scores.put(client.getName(), scores.get(client.getName())+2);
+            return Protocol.hit(2, 0, 0, new Integer[]{0, 0});
+        } else {
+            return Protocol.hit(0, 0, 0, new Integer[]{0, 0});
+        }
     }
 
-    public ServerSocket getServerSocket(){
-        return ssock;
-    }
-
-    private void addClient(ClientHandler client) {
-        clients.add(client);
-    }
-
+    /**
+     * Removes a client from the server
+     * @param client client that needs to be removed
+     */
     synchronized void removeClient(String client) {
         Set<ClientHandler> s = new HashSet<ClientHandler>();
         for (ClientHandler handler : clients) {
-            if (!handler.getClientName().equals(client)) {
+            if (!handler.getName().equals(client)) {
                 s.add(handler);
             }
         }
         clients.retainAll(s);
     }
-
 }

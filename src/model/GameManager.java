@@ -4,6 +4,7 @@ import controller.Controller;
 import controller.GameState;
 import javafx.scene.paint.Color;
 import model.board.Board;
+import model.board.Tile;
 import model.player.ComputerPlayer;
 import model.player.HumanPlayer;
 import model.player.Player;
@@ -411,5 +412,44 @@ public class GameManager {
      */
     public static boolean getRadarOpponentReady() {
         return radarReadyOpponent;
+    }
+
+    public static String[][] getBoardAsString() {
+        String[][] board = new String[Board.HEIGHT][Board.WIDTH];
+
+        for(int y=0; y<Board.HEIGHT; y++) {
+            for(int x=0; x<Board.WIDTH; x++) {
+                Tile tile = userBoard.getTile(x, y);
+
+                if(tile.hasShip()) {
+                    Ship ship = tile.getShip();
+                    String number = "" + ship.getName().toCharArray()[ship.getName().toCharArray().length-1];
+
+                    if(ship instanceof PatrolBoatShip) {
+                        board[y][x] = "P" + number;
+                    }
+
+                    if(ship instanceof SuperPatrolShip) {
+                        board[y][x] = "S" + number;
+                    }
+
+                    if(ship instanceof DestroyerShip) {
+                        board[y][x] = "D" + number;
+                    }
+
+                    if(ship instanceof BattleShip) {
+                        board[y][x] = "B" + number;
+                    }
+
+                    if(ship instanceof CarrierShip) {
+                        board[y][x] = "C" + number;
+                    }
+                } else {
+                    board[y][x] = "";
+                }
+            }
+        }
+
+        return board;
     }
 }
